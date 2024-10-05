@@ -261,43 +261,43 @@ window.addEventListener('click', onMouseClick, false); // For desktop clicks
 window.addEventListener('touchstart', onTouchStart, false); // For mobile touches
 
 // Set initial positions and rotation speeds
-const earthOrbitRadius = 20;
-let earthAngle = 0;
-const earthRotationSpeed = 0.05;
-
-const marsOrbitRadius = 30;
-let marsAngle = 0;
-const marsRotationSpeed = 0.03;
-
-const venusOrbitRadius = 15;
-let venusAngle = 0;
-const venusRotationSpeed = 0.07;
-
-const mercuryOrbitRadius = 8;  // Añadir órbita de Mercurio
+const mercuryOrbitRadius = 8;  // Mercurio (más cercano al Sol)
 let mercuryAngle = 0;
-const mercuryRotationSpeed = 0.1;
+const mercuryRotationSpeed = 0.1;  // Velocidad más rápida
 
-const moonOrbitRadius = 2;
-let moonAngle = 0;
-const moonOrbitSpeed = 0.05;
+const venusOrbitRadius = 15;  // Venus
+let venusAngle = 0;
+const venusRotationSpeed = 0.08;  // Velocidad rápida
 
-const jupiterOrbitRadius = 40;
+const earthOrbitRadius = 20;  // Tierra
+let earthAngle = 0;
+const earthRotationSpeed = 0.07;
+
+const marsOrbitRadius = 30;  // Marte
+let marsAngle = 0;
+const marsRotationSpeed = 0.06;
+
+const jupiterOrbitRadius = 40;  // Júpiter
 let jupiterAngle = 0;
-const jupiterRotationSpeed = 0.02;
+const jupiterRotationSpeed = 0.04;  // Más lento debido a estar más lejos
 
-const saturnOrbitRadius = 50;
+const saturnOrbitRadius = 50;  // Saturno
 let saturnAngle = 0;
-const saturnRotationSpeed = 0.018;
+const saturnRotationSpeed = 0.03;
 
-const uranusOrbitRadius = 60;
+const uranusOrbitRadius = 60;  // Urano
 let uranusAngle = 0;
-const uranusRotationSpeed = 0.015;
+const uranusRotationSpeed = 0.02;  // Velocidad más lenta
 
-const neptuneOrbitRadius = 70;
+const neptuneOrbitRadius = 70;  // Neptuno (más lejano)
 let neptuneAngle = 0;
-const neptuneRotationSpeed = 0.012;
+const neptuneRotationSpeed = 0.01;  // Velocidad muy lenta
 
-const sunRotationSpeed = 0.01; // Slow Sun rotation
+const moonOrbitRadius = 2;  // Órbita de la luna alrededor de la Tierra
+let moonAngle = 0;
+const moonOrbitSpeed = 0.05;  // La Luna mantiene su velocidad
+
+const sunRotationSpeed = 0.01;  // Rotación lenta del Sol
 
 // Event listener for the speed control
 document.getElementById('speedRange').addEventListener('input', (event) => {
@@ -309,20 +309,21 @@ function animate() {
     requestAnimationFrame(animate);
 
     // Update planet orbits
-    mercuryAngle += 0.012 * timeSpeed;  // Mercurio movimiento orbital
-    earthAngle += 0.01 * timeSpeed;
-    marsAngle += 0.008 * timeSpeed;
-    venusAngle += 0.012 * timeSpeed;
-    moonAngle += moonOrbitSpeed * timeSpeed;
+    mercuryAngle += mercuryRotationSpeed * timeSpeed;  // Velocidad más rápida para Mercurio
+    venusAngle += venusRotationSpeed * timeSpeed;
+    earthAngle += earthRotationSpeed * timeSpeed;
+    marsAngle += marsRotationSpeed * timeSpeed;
     jupiterAngle += jupiterRotationSpeed * timeSpeed;
     saturnAngle += saturnRotationSpeed * timeSpeed;
     uranusAngle += uranusRotationSpeed * timeSpeed;
     neptuneAngle += neptuneRotationSpeed * timeSpeed;
+    moonAngle += moonOrbitSpeed * timeSpeed;  // Órbita de la luna
 
-    mercury.position.set(Math.cos(mercuryAngle) * mercuryOrbitRadius, 0, Math.sin(mercuryAngle) * mercuryOrbitRadius);  // Actualizar posición de Mercurio
+    // Update planet positions
+    mercury.position.set(Math.cos(mercuryAngle) * mercuryOrbitRadius, 0, Math.sin(mercuryAngle) * mercuryOrbitRadius);
+    venus.position.set(Math.cos(venusAngle) * venusOrbitRadius, 0, Math.sin(venusAngle) * venusOrbitRadius);
     earth.position.set(Math.cos(earthAngle) * earthOrbitRadius, 0, Math.sin(earthAngle) * earthOrbitRadius);
     mars.position.set(Math.cos(marsAngle) * marsOrbitRadius, 0, Math.sin(marsAngle) * marsOrbitRadius);
-    venus.position.set(Math.cos(venusAngle) * venusOrbitRadius, 0, Math.sin(venusAngle) * venusOrbitRadius);
     moon.position.set(earth.position.x + Math.cos(moonAngle) * moonOrbitRadius, 0, earth.position.z + Math.sin(moonAngle) * moonOrbitRadius);
     jupiter.position.set(Math.cos(jupiterAngle) * jupiterOrbitRadius, 0, Math.sin(jupiterAngle) * jupiterOrbitRadius);
     saturn.position.set(Math.cos(saturnAngle) * saturnOrbitRadius, 0, Math.sin(saturnAngle) * saturnOrbitRadius);
