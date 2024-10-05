@@ -18,6 +18,10 @@
         button, input {
             margin: 5px;
         }
+        /* Cambiar el color del texto para que sea visible */
+        label {
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -27,7 +31,9 @@
         
         <button onclick="toggleLabels()">Toggle Labels</button>
         <button onclick="toggleOrbits()">Toggle Orbits</button>
-        <button onclick="switchView()">Switch View</button>
+    </div>
+    <div id="instructions">
+
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

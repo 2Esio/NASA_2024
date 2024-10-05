@@ -93,21 +93,21 @@ function createCelestialBody(size, texture){
 }
 
 // Function to create labels
-function createLabel(name, body){
+function createLabel(name, planet) {
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.font = '30px Arial';
-    ctx.fillStyle = 'white';
-    ctx.fillText(name, 0, 30);
-
+    const context = canvas.getContext('2d');
+    context.font = '30px Arial';
+    context.fillStyle = 'white';
+    context.fillText(name, 0, 30);
+    
     const texture = new THREE.CanvasTexture(canvas);
     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
     const sprite = new THREE.Sprite(spriteMaterial);
     sprite.scale.set(4, 2, 1);
     scene.add(sprite);
 
-    // Attach label to celestial body
-    sprite.position.set(body.position.x, body.position.y + 6, body.position.z);
+    // Attach label to planet or moon
+    sprite.position.set(planet.position.x, planet.position.y + 6, planet.position.z);
     return sprite;
 }
 
@@ -184,6 +184,25 @@ function onMouseClick(event) {
         resetZoom();
     }
 }
+
+// Load textures for Saturn's rings
+const saturnRingTexture = loader.load('src/rings.png');
+
+// Function to create Saturn's rings
+function createSaturnRings() {
+    const ringGeometry = new THREE.RingGeometry(2, 3.5, 64); // Adjust inner/outer radius for the rings
+    const ringMaterial = new THREE.MeshBasicMaterial({
+        map: saturnRingTexture, // Apply the ring texture
+        side: THREE.DoubleSide, // Render both sides of the ring
+        transparent: true // Make the texture transparent where needed
+    });
+    const saturnRings = new THREE.Mesh(ringGeometry, ringMaterial);
+    saturnRings.rotation.x = Math.PI / 2; // Align the rings to the x-z plane
+    saturn.add(saturnRings); // Attach the rings to Saturn
+}
+
+// Call the function to create Saturn's rings
+createSaturnRings();
 
 function onTouchStart(event) {
     if (event.target.closest('#controls')) {
