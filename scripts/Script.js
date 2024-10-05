@@ -39,7 +39,7 @@ const neptuneTexture = loader.load('src/neptune.jpg');
 // Create celestial bodies
 const planets = [];
 const sun = createCelestialBody(5, sunTexture);
-const mercury = createCelestialBody(0.5, mercuryTexture);
+const mercury = createCelestialBody(0.5, mercuryTexture); // Añadir Mercurio
 const venus = createCelestialBody(0.9, venusTexture);
 const earth = createCelestialBody(1, earthTexture);
 const moon = createCelestialBody(0.27, moonTexture);
@@ -54,10 +54,11 @@ planets.push(sun, mercury, venus, earth, moon, mars, jupiter, saturn, uranus, ne
 // Add labels
 const labels = [];
 labels.push(createLabel('Sun', sun));
-labels.push(createLabel('Earth', earth));
-labels.push(createLabel('Mars', mars));
+labels.push(createLabel('Mercury', mercury));  // Añadir label para Mercurio
 labels.push(createLabel('Venus', venus));
+labels.push(createLabel('Earth', earth));
 labels.push(createLabel('Moon', moon));
+labels.push(createLabel('Mars', mars));
 labels.push(createLabel('Jupiter', jupiter));
 labels.push(createLabel('Saturn', saturn));
 labels.push(createLabel('Uranus', uranus));
@@ -65,6 +66,7 @@ labels.push(createLabel('Neptune', neptune));
 
 // Add orbits
 const orbits = [];
+orbits.push(createOrbit(8, 0xaaaaaa)); // Añadir órbita de Mercurio
 orbits.push(createOrbit(20, 0x00ff00)); // Earth's orbit
 orbits.push(createOrbit(30, 0xff0000)); // Mars' orbit
 orbits.push(createOrbit(15, 0x0000ff)); // Venus' orbit
@@ -84,7 +86,7 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 // Function to create celestial bodies
-function createCelestialBody(size, texture){
+function createCelestialBody(size, texture) {
     const geometry = new THREE.SphereGeometry(size, 32, 32);
     const material = new THREE.MeshBasicMaterial({ map: texture });
     const body = new THREE.Mesh(geometry, material);
@@ -106,13 +108,12 @@ function createLabel(name, planet) {
     sprite.scale.set(4, 2, 1);
     scene.add(sprite);
 
-    // Attach label to planet or moon
-    sprite.position.set(planet.position.x, planet.position.y + 6, planet.position.z);
-    return sprite;
+    // Return both sprite and planet to update position
+    return { sprite, planet };
 }
 
 // Function to create orbits
-function createOrbit(radius, color){
+function createOrbit(radius, color) {
     const curve = new THREE.EllipseCurve(
         0, 0,            // ax, ay
         radius, radius,   // xRadius, yRadius
@@ -149,7 +150,7 @@ function createOrbitAroundPlanet(radius, color, planet) {
 // Toggle functions for UI controls
 function toggleLabels() {
     labelsVisible = !labelsVisible;
-    labels.forEach(label => label.visible = labelsVisible);
+    labels.forEach(label => label.sprite.visible = labelsVisible);
 }
 
 function toggleOrbits() {
@@ -272,6 +273,10 @@ const venusOrbitRadius = 15;
 let venusAngle = 0;
 const venusRotationSpeed = 0.07;
 
+const mercuryOrbitRadius = 8;  // Añadir órbita de Mercurio
+let mercuryAngle = 0;
+const mercuryRotationSpeed = 0.1;
+
 const moonOrbitRadius = 2;
 let moonAngle = 0;
 const moonOrbitSpeed = 0.05;
@@ -304,6 +309,7 @@ function animate() {
     requestAnimationFrame(animate);
 
     // Update planet orbits
+    mercuryAngle += 0.012 * timeSpeed;  // Mercurio movimiento orbital
     earthAngle += 0.01 * timeSpeed;
     marsAngle += 0.008 * timeSpeed;
     venusAngle += 0.012 * timeSpeed;
@@ -313,6 +319,7 @@ function animate() {
     uranusAngle += uranusRotationSpeed * timeSpeed;
     neptuneAngle += neptuneRotationSpeed * timeSpeed;
 
+    mercury.position.set(Math.cos(mercuryAngle) * mercuryOrbitRadius, 0, Math.sin(mercuryAngle) * mercuryOrbitRadius);  // Actualizar posición de Mercurio
     earth.position.set(Math.cos(earthAngle) * earthOrbitRadius, 0, Math.sin(earthAngle) * earthOrbitRadius);
     mars.position.set(Math.cos(marsAngle) * marsOrbitRadius, 0, Math.sin(marsAngle) * marsOrbitRadius);
     venus.position.set(Math.cos(venusAngle) * venusOrbitRadius, 0, Math.sin(venusAngle) * venusOrbitRadius);
@@ -321,6 +328,11 @@ function animate() {
     saturn.position.set(Math.cos(saturnAngle) * saturnOrbitRadius, 0, Math.sin(saturnAngle) * saturnOrbitRadius);
     uranus.position.set(Math.cos(uranusAngle) * uranusOrbitRadius, 0, Math.sin(uranusAngle) * uranusOrbitRadius);
     neptune.position.set(Math.cos(neptuneAngle) * neptuneOrbitRadius, 0, Math.sin(neptuneAngle) * neptuneOrbitRadius);
+
+    // Update labels to follow planets
+    labels.forEach(label => {
+        label.sprite.position.set(label.planet.position.x, label.planet.position.y + 6, label.planet.position.z);
+    });
 
     // Update sun's rotation
     sun.rotation.y += sunRotationSpeed;
