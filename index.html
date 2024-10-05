@@ -4,43 +4,59 @@
     <meta charset="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyRiders</title>
     <link rel="shortcut icon" href="src/icon.jpeg">
-    <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
-        #controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-        }
-        button, input {
-            margin: 5px;
-        }
-        /* Cambiar el color del texto para que sea visible */
-        label {
-            color: white;
-        }
-    </style>
+    <link rel="stylesheet" href="Assets/Styles/Styles.css">
 </head>
 <body>
-    <div id="controls">
-        <label for="speedRange">Speed Control: </label>
-        <input type="range" id="speedRange" min="0.1" max="10" value="1" step="0.1">
-        
-        <button onclick="toggleLabels()">Toggle Labels</button>
-        <button onclick="toggleOrbits()">Toggle Orbits</button>
+
+<header>
+    <div id="header-content">
+        <img src="src/icon.jpeg" alt="SkyRiders Logo" class="logo">
+        <h1>SkyRiders</h1>
+        <p>Explore the Solar System with Us</p>
     </div>
-    <div id="instructions">
+</header>
 
+<!-- Controles de simulación -->
+<div id="controls">
+    <label for="speedRange">Speed Control: </label>
+    <input type="range" id="speedRange" min="0.1" max="10" value="1" step="0.1">
+    
+    <button onclick="toggleLabels()">Toggle Labels</button>
+    <button onclick="toggleOrbits()">Toggle Orbits</button>
+</div>
+
+<!-- Instructivo para los controles -->
+<div class="instruction">
+    <h3>Simulation Controls</h3>
+    <ul>
+        <li>Click on a planet to zoom in.</li>
+        <li>Click outside to reset view.</li>
+        <li>Use the speed slider to adjust the simulation speed.</li>
+        <li>Toggle orbits and labels using the buttons.</li>
+    </ul>
+</div>
+
+<!-- Aquí va la simulación del sistema solar -->
+<canvas id="solarSimulationCanvas"></canvas>
+
+<footer>
+    <div class="footer-content">
+        <p>&copy; 2024 SkyRiders. All rights reserved.</p>
+        <p>Contact us: +52 (55)614 651 15 | SkyriderMexico@gmail.com</p>
     </div>
+    <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms & Conditions</a>
+        <a href="#">FAQ</a>
+    </div>
+</footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+<!-- Cargar las librerías necesarias -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
 
-    <!-- Referencia al archivo JavaScript externo -->
-    <script src="scripts/Script.js"></script>
+<!-- Cargar el archivo de scripts para la simulación -->
+<script src="scripts/Script.js"></script>
 </body>
 </html>
