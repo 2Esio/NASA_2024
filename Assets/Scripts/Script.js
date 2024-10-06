@@ -527,7 +527,7 @@ function processCometsData(comets) {
         if (comet.object.startsWith('C/') || comet.object.startsWith('P/')) {
             console.log('Processing comet:', comet.object);
 
-            const size = comet.size || 2;
+            const size = comet.size || 0.7;
             const semiMajorAxis = comet.semi_major_axis || Math.random() * 50 + 30; // Semieje mayor
             const eccentricity = comet.e || 0.5; // Excentricidad
             const inclination = comet.i_deg || 0; // Inclinación en grados
@@ -549,11 +549,20 @@ function processCometsData(comets) {
             let cometAngle = 0;
             function updateCometPosition() {
                 cometAngle += translationSpeed * timeSpeed;
-                cometBody.position.set(
-                    Math.cos(cometAngle) * semiMajorAxis,
-                    0,
-                    Math.sin(cometAngle) * semiMajorAxis * Math.sqrt(1 - Math.pow(eccentricity, 2)) // Ajuste elíptico
-                );
+
+                // Cálculo de la posición en la órbita elíptica
+                const x = Math.cos(cometAngle) * semiMajorAxis;  // Eje mayor
+                const z = Math.sin(cometAngle) * semiMajorAxis * Math.sqrt(1 - Math.pow(eccentricity, 2));  // Eje menor
+                
+                // Crear un vector de la posición calculada en el plano horizontal
+                const position = new THREE.Vector3(x, 0, z);
+                
+                // Rotar la órbita completa para aplicar la inclinación
+                const rotationMatrix = new THREE.Matrix4().makeRotationX(THREE.Math.degToRad(inclination));
+                position.applyMatrix4(rotationMatrix); // Aplica la inclinación en el eje X
+
+                // Actualizar la posición del cometa con la rotación aplicada
+                cometBody.position.set(position.x, position.y, position.z);
             }
 
             // Añadir la función de actualización a la animación
@@ -561,6 +570,8 @@ function processCometsData(comets) {
         }
     });
 }
+
+
 
 
 
