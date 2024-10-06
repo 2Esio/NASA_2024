@@ -8,6 +8,11 @@ scene.background = bgTexture;
 
 // Set up camera and view states
 let isZoomedIn = false; // View state for zoom
+let zoomTarget = null; // Keeps track of the planet or moon we're zoomed into
+let lastClickedPlanet = null; // Keeps track of the last clicked planet
+let zoomInProgress = false; // Prevent double clicks or quick clicks
+const minZoomDistance = 5;  // Distancia mínima permitida para zoom
+const maxZoomDistance = 100; // Distancia máxima permitida para zoom
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 50, 100); // Default external view
@@ -21,6 +26,10 @@ const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
 orbitControls.enableDamping = true; // Add smooth damping to zoom/pan/rotate
 orbitControls.dampingFactor = 0.1;
 orbitControls.enableZoom = true; // Enable zoom by default for planet view
+
+// Definir límites de zoom en los controles de cámara
+orbitControls.minDistance = minZoomDistance; // Distancia mínima para el zoom manual
+orbitControls.maxDistance = maxZoomDistance; // Distancia máxima para el zoom manual
 
 const pointerControls = new THREE.PointerLockControls(camera, renderer.domElement);
 
@@ -79,7 +88,6 @@ orbits.push(createOrbit(70, 0x0000ff)); // Neptune's orbit
 let labelsVisible = true;
 let orbitsVisible = true;
 let timeSpeed = 1; // Default speed control
-let zoomTarget = null; // Keeps track of the planet or moon we're zoomed into
 
 // Raycaster for detecting clicks on planets
 const raycaster = new THREE.Raycaster();
@@ -158,19 +166,103 @@ function toggleOrbits() {
     orbits.forEach(orbit => orbit.visible = orbitsVisible);
 }
 
-function switchView() {
-    if (!isZoomedIn) {
-        pointerControls.lock();
-    } else {
-        pointerControls.unlock();
+// Function to zoom into a planet with zoom limits
+function zoomToPlanet(planet) {
+    if (zoomInProgress || lastClickedPlanet === planet) {
+        return;  // Prevenir múltiples clics o clics rápidos
     }
-    isZoomedIn = !isZoomedIn;
+    isZoomedIn = true;
+    zoomTarget = planet;
+    orbitControls.enabled = true;
+    orbitControls.target.copy(planet.position);
+    orbitControls.update();
+
+    lastClickedPlanet = planet;  // Guardar el último planeta clicado
+    zoomInProgress = true;  // Indicar que un zoom está en progreso
+
+    const zoomDuration = 1;
+    const initialPosition = camera.position.clone();
+    let targetPosition;
+
+    // Ajustar el zoom dependiendo del tamaño del planeta (ej. diferencia entre Tierra y Luna)
+    if (planet === moon) {
+        targetPosition = planet.position.clone().setLength(Math.max(5, minZoomDistance));  // Zoom más cercano para la Luna
+    } else {
+        targetPosition = planet.position.clone().setLength(Math.min(10, maxZoomDistance)); // Zoom para otros planetas
+    }
+
+    let zoomProgress = 0;
+    const zoomInterval = setInterval(() => {
+        zoomProgress += 0.02;
+        if (zoomProgress >= 1) {
+            clearInterval(zoomInterval);
+            zoomInProgress = false;  // Terminar el proceso de zoom
+        }
+        camera.position.lerpVectors(initialPosition, targetPosition, zoomProgress);
+        camera.lookAt(planet.position);
+    }, 16);
 }
 
-// Raycasting to detect clicks or touches on planets or moon
+// Function to reset the zoom
+function resetZoom() {
+    if (zoomInProgress) return;  // Prevenir el reset durante el zoom
+    isZoomedIn = false;
+    zoomTarget = null;
+    orbitControls.target.set(0, 0, 0);
+    camera.position.set(0, 50, 100);
+    camera.lookAt(0, 0, 0);
+    lastClickedPlanet = null;  // Restablecer el planeta clicado
+}
+
+// Corrección para la velocidad de traslación de los planetas
+const mercuryOrbitRadius = 8;
+let mercuryAngle = 0;
+const mercuryRotationSpeed = 0.01;  // Reducido
+
+const venusOrbitRadius = 15;
+let venusAngle = 0;
+const venusRotationSpeed = 0.008;  // Reducido
+
+const earthOrbitRadius = 20;
+let earthAngle = 0;
+const earthRotationSpeed = 0.007;
+
+const marsOrbitRadius = 30;
+let marsAngle = 0;
+const marsRotationSpeed = 0.006;
+
+const jupiterOrbitRadius = 40;
+let jupiterAngle = 0;
+const jupiterRotationSpeed = 0.004;  // Reducido
+
+const saturnOrbitRadius = 50;
+let saturnAngle = 0;
+const saturnRotationSpeed = 0.003;
+
+const uranusOrbitRadius = 60;
+let uranusAngle = 0;
+const uranusRotationSpeed = 0.002;
+
+const neptuneOrbitRadius = 70;
+let neptuneAngle = 0;
+const neptuneRotationSpeed = 0.001;  // Muy lento
+
+const moonOrbitRadius = 2;
+let moonAngle = 0;
+const moonOrbitSpeed = 0.05;  // La Luna mantiene su velocidad
+
+const sunRotationSpeed = 0.01;  // Rotación lenta del Sol
+
+// Event listener for the speed control
+document.getElementById('speedRange').addEventListener('input', (event) => {
+    timeSpeed = parseFloat(event.target.value);
+});
+
+// Event listeners for click and double click
 function onMouseClick(event) {
+    if (zoomInProgress) return;  // Prevenir clics durante el zoom
     if (event.target.closest('#controls')) {
-        return;
+        return;  // Prevenir interacciones en los controles
     }
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -186,123 +278,15 @@ function onMouseClick(event) {
     }
 }
 
-// Load textures for Saturn's rings
-const saturnRingTexture = loader.load('Assets/Images/rings.png');
-
-// Function to create Saturn's rings
-function createSaturnRings() {
-    const ringGeometry = new THREE.RingGeometry(2, 3.5, 64); // Adjust inner/outer radius for the rings
-    const ringMaterial = new THREE.MeshBasicMaterial({
-        map: saturnRingTexture, // Apply the ring texture
-        side: THREE.DoubleSide, // Render both sides of the ring
-        transparent: true // Make the texture transparent where needed
-    });
-    const saturnRings = new THREE.Mesh(ringGeometry, ringMaterial);
-    saturnRings.rotation.x = Math.PI / 2; // Align the rings to the x-z plane
-    saturn.add(saturnRings); // Attach the rings to Saturn
+// Doble clic - prevenir zoom al centro del sistema solar
+function onDoubleClick(event) {
+    // Prevenir el doble clic si ya está haciendo zoom o el zoom ha sido completado
+    if (zoomInProgress || !zoomTarget) return;
 }
 
-// Call the function to create Saturn's rings
-createSaturnRings();
-
-function onTouchStart(event) {
-    if (event.target.closest('#controls')) {
-        return;
-    }
-
-    if (event.touches.length == 1) {
-        event.preventDefault();
-        const touch = event.touches[0];
-        mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(planets);
-
-        if (intersects.length > 0) {
-            zoomToPlanet(intersects[0].object);
-        } else if (isZoomedIn) {
-            resetZoom();
-        }
-    }
-}
-
-function zoomToPlanet(planet) {
-    isZoomedIn = true;
-    zoomTarget = planet;
-    orbitControls.enabled = true;
-    orbitControls.target.copy(planet.position);
-    orbitControls.update();
-
-    const zoomDuration = 1;
-    const initialPosition = camera.position.clone();
-    const targetPosition = planet.position.clone().setLength(10);
-
-    let zoomProgress = 0;
-    const zoomInterval = setInterval(() => {
-        zoomProgress += 0.02;
-        if (zoomProgress >= 1) {
-            clearInterval(zoomInterval);
-        }
-        camera.position.lerpVectors(initialPosition, targetPosition, zoomProgress);
-        camera.lookAt(planet.position);
-    }, 16);
-}
-
-function resetZoom() {
-    isZoomedIn = false;
-    zoomTarget = null;
-    orbitControls.target.set(0, 0, 0);
-    camera.position.set(0, 50, 100);
-    camera.lookAt(0, 0, 0);
-}
-
-window.addEventListener('click', onMouseClick, false); // For desktop clicks
-window.addEventListener('touchstart', onTouchStart, false); // For mobile touches
-
-// Set initial positions and rotation speeds
-const mercuryOrbitRadius = 8;  // Mercurio (más cercano al Sol)
-let mercuryAngle = 0;
-const mercuryRotationSpeed = 0.1;  // Velocidad más rápida
-
-const venusOrbitRadius = 15;  // Venus
-let venusAngle = 0;
-const venusRotationSpeed = 0.08;  // Velocidad rápida
-
-const earthOrbitRadius = 20;  // Tierra
-let earthAngle = 0;
-const earthRotationSpeed = 0.07;
-
-const marsOrbitRadius = 30;  // Marte
-let marsAngle = 0;
-const marsRotationSpeed = 0.06;
-
-const jupiterOrbitRadius = 40;  // Júpiter
-let jupiterAngle = 0;
-const jupiterRotationSpeed = 0.04;  // Más lento debido a estar más lejos
-
-const saturnOrbitRadius = 50;  // Saturno
-let saturnAngle = 0;
-const saturnRotationSpeed = 0.03;
-
-const uranusOrbitRadius = 60;  // Urano
-let uranusAngle = 0;
-const uranusRotationSpeed = 0.02;  // Velocidad más lenta
-
-const neptuneOrbitRadius = 70;  // Neptuno (más lejano)
-let neptuneAngle = 0;
-const neptuneRotationSpeed = 0.01;  // Velocidad muy lenta
-
-const moonOrbitRadius = 2;  // Órbita de la luna alrededor de la Tierra
-let moonAngle = 0;
-const moonOrbitSpeed = 0.05;  // La Luna mantiene su velocidad
-
-const sunRotationSpeed = 0.01;  // Rotación lenta del Sol
-
-// Event listener for the speed control
-document.getElementById('speedRange').addEventListener('input', (event) => {
-    timeSpeed = parseFloat(event.target.value);
-});
+// Raycasting to detect clicks or touches on planets or moon
+window.addEventListener('click', onMouseClick, false);
+window.addEventListener('dblclick', onDoubleClick, false);
 
 // Animation loop
 function animate() {
@@ -341,9 +325,9 @@ function animate() {
     // If zoomed in, make camera follow planet
     if (isZoomedIn && zoomTarget) {
         camera.position.set(
-            zoomTarget.position.x + 10, 
-            zoomTarget.position.y + 5,  
-            zoomTarget.position.z + 10  
+            Math.max(zoomTarget.position.x + 10, minZoomDistance), 
+            Math.max(zoomTarget.position.y + 5, minZoomDistance),  
+            Math.max(zoomTarget.position.z + 10, minZoomDistance)  
         );
         camera.lookAt(zoomTarget.position);
     }
