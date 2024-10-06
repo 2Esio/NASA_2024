@@ -527,7 +527,6 @@ function animate() {
     ceres.position.set(Math.cos(ceresAngle) * ceresOrbitRadius, 0, Math.sin(ceresAngle) * ceresOrbitRadius);
     eris.position.set(Math.cos(erisAngle) * erisOrbitRadius, 0, Math.sin(erisAngle) * erisOrbitRadius);
 
-
     // Update labels to follow planets
     labels.forEach(label => {
         label.sprite.position.set(label.planet.position.x, label.planet.position.y + 6, label.planet.position.z);
