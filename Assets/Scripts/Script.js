@@ -152,7 +152,7 @@ const celestialBodiesInfo = {
     },
     mercury: {
         name: "Mercury",
-        gravity: "3.7",
+        gravity: 3.7,
         atmosphere: "None",
         type: "Rocky",
         discoverer: "Unknown",
@@ -160,7 +160,106 @@ const celestialBodiesInfo = {
         effect: "Your weight would be much lighter.",
         fact: "Mercury is the closest planet to the Sun but not the hottest."
     },
-    // Agrega información para los demás planetas aquí...
+    venus: {
+        name: "Venus",
+        gravity: 8.87,
+        atmosphere: "Carbon Dioxide",
+        type: "Rocky",
+        discoverer: "Unknown",
+        life: "No",
+        effect: "Your body would experience crushing pressure.",
+        fact: "Venus has temperatures over 450°C."
+    },
+    earth: {
+        name: "Earth",
+        gravity: 9.81,
+        atmosphere: "Nitrogen and Oxygen",
+        type: "Rocky",
+        discoverer: "Unknown",
+        life: "Yes",
+        effect: "Your body would function normally.",
+        fact: "Earth is the only known planet to harbor life."
+    },
+    mars: {
+        name: "Mars",
+        gravity: 3.71,
+        atmosphere: "Carbon Dioxide",
+        type: "Rocky",
+        discoverer: "Galileo Galilei",
+        life: "No",
+        effect: "Your weight would be much lighter.",
+        fact: "Mars is home to the tallest mountain in the solar system."
+    },
+    jupiter: {
+        name: "Jupiter",
+        gravity: 24.79,
+        atmosphere: "Hydrogen and Helium",
+        type: "Gas Giant",
+        discoverer: "Galileo Galilei",
+        life: "No",
+        effect: "Your weight would be more than double.",
+        fact: "Jupiter is so large it could fit over 1,300 Earths inside it."
+    },
+    saturn: {
+        name: "Saturn",
+        gravity: 10.44,
+        atmosphere: "Hydrogen and Helium",
+        type: "Gas Giant",
+        discoverer: "Galileo Galilei",
+        life: "No",
+        effect: "Your weight would be heavier.",
+        fact: "Saturn is known for its stunning ring system."
+    },
+    uranus: {
+        name: "Uranus",
+        gravity: 8.69,
+        atmosphere: "Hydrogen and Helium",
+        type: "Gas Giant",
+        discoverer: "William Herschel",
+        life: "No",
+        effect: "Your weight would be slightly less.",
+        fact: "Uranus rotates on its side."
+    },
+    neptune: {
+        name: "Neptune",
+        gravity: 11.15,
+        atmosphere: "Hydrogen, Helium, and Methane",
+        type: "Gas Giant",
+        discoverer: "Johann Galle",
+        life: "No",
+        effect: "Your weight would be heavier.",
+        fact: "Neptune has supersonic winds."
+    },
+    pluto: {
+        name: "Pluto",
+        gravity: 0.62,
+        atmosphere: "Nitrogen, Methane, and Carbon Monoxide",
+        type: "Dwarf Planet",
+        discoverer: "Clyde Tombaugh",
+        life: "No",
+        effect: "Your weight would be negligible.",
+        fact: "Pluto is no longer classified as a planet."
+    },
+    ceres: {
+        name: "Ceres",
+        gravity: 0.27,
+        atmosphere: "None",
+        type: "Dwarf Planet",
+        discoverer: "Giuseppe Piazzi",
+        life: "No",
+        effect: "Your weight would be even less.",
+        fact: "Ceres is the largest object in the asteroid belt."
+    },
+    eris: {
+        name: "Eris",
+        gravity: 0.43,
+        atmosphere: "None",
+        type: "Dwarf Planet",
+        discoverer: "Mike Brown",
+        life: "No",
+        effect: "Your weight would be extremely light.",
+        fact: "Eris is one of the most massive dwarf planets."
+    }
 };
 
 // Función para mostrar la información del planeta seleccionado
@@ -242,11 +341,26 @@ function createOrbitAroundPlanet(radius, color, planet) {
     return orbit;
 }
 
+// Toggle functions for UI controls
+function toggleLabels() {
+    labelsVisible = !labelsVisible;
+    labels.forEach(label => label.sprite.visible = labelsVisible);
+}
+
+function toggleOrbits() {
+    orbitsVisible = !orbitsVisible;
+    orbits.forEach(orbit => orbit.visible = orbitsVisible);
+}
+
 // Handle click and touch events
 window.addEventListener('click', onMouseClick, false);
 window.addEventListener('touchstart', onTouchStart, false);
 
 function onMouseClick(event) {
+    if (zoomInProgress) return; 
+    if (event.target.closest('#controls')) {
+        return;  // Prevent interactions on controls
+    }
     event.preventDefault();
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;

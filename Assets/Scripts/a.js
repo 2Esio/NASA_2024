@@ -331,7 +331,7 @@ const celestialBodiesInfo = {
         life: "No",
         effect: "Your weight would be extremely light.",
         fact: "Eris is one of the most massive dwarf planets."
-    },
+    }
 };
 
 // Function to display information about the celestial body
