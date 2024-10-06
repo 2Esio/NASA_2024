@@ -165,7 +165,6 @@ const celestialBodiesInfo = {
 
 // Función para mostrar la información del planeta seleccionado
 function showPlanetInfo(planetName) {
-    console.log("Showing information for: ",planetName);
     const info = celestialBodiesInfo[planetName.toLowerCase()];
 
     if (info) {
@@ -314,6 +313,9 @@ function resetZoom() {
     camera.position.set(0, 50, 100);
     camera.lookAt(0, 0, 0);
     lastClickedPlanet = null;
+
+    // Oculta el contenedor de información
+    document.getElementById('info-container').style.display = 'none';
 }
 
 // Animations for planet rotations
