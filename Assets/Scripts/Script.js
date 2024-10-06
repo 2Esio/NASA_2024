@@ -27,6 +27,12 @@ orbitControls.enableDamping = true; // Add smooth damping to zoom/pan/rotate
 orbitControls.dampingFactor = 0.1;
 orbitControls.enableZoom = true; // Enable zoom by default for planet view
 
+// Add touch controls for mobile devices
+orbitControls.touchPan = true;
+orbitControls.touchRotate = true;
+orbitControls.enableDamping = true; // Enable damping for mobile smoothness
+orbitControls.dampingFactor = 0.15;
+
 // Definir límites de zoom en los controles de cámara
 orbitControls.minDistance = minZoomDistance; // Distancia mínima para el zoom manual
 orbitControls.maxDistance = maxZoomDistance; // Distancia máxima para el zoom manual
@@ -188,44 +194,44 @@ function toggleOrbits() {
 // Función para mostrar la información al hacer clic en un planeta o luna
 const celestialBodiesInfo = {
     mercury: {
-        name: "Mercurio",
+        name: "Mercury",
         gravity: 3.7,
-        atmosphere: "Ninguna",
-        type: "Rocoso",
-        discoverer: "Desconocido",
+        atmosphere: "None",
+        type: "Rocky",
+        discoverer: "Unknown",
         life: "No",
-        effect: "Tu peso sería mucho menor.",
-        fact: "Mercurio es el planeta más cercano al Sol, pero no el más caliente.",
+        effect: "Your weight would be much lighter.",
+        fact: "Mercury is the closest planet to the Sun but not the hottest.",
     },
     venus: {
         name: "Venus",
         gravity: 8.87,
-        atmosphere: "Dióxido de Carbono",
-        type: "Rocoso",
-        discoverer: "Desconocido",
+        atmosphere: "Carbon Dioxide",
+        type: "Rocky",
+        discoverer: "Unknown",
         life: "No",
-        effect: "Tu cuerpo soportaría una presión aplastante.",
-        fact: "Venus tiene temperaturas superiores a 450 °C.",
+        effect: "Your body would experience crushing pressure.",
+        fact: "Venus has temperatures over 450°C.",
     },
     earth: {
-        name: "Tierra",
+        name: "Earth",
         gravity: 9.81,
-        atmosphere: "Nitrógeno y Oxígeno",
-        type: "Rocoso",
-        discoverer: "Desconocido",
-        life: "Sí",
-        effect: "Tu cuerpo funcionaría normalmente.",
-        fact: "La Tierra es el único planeta conocido que alberga vida.",
+        atmosphere: "Nitrogen and Oxygen",
+        type: "Rocky",
+        discoverer: "Unknown",
+        life: "Yes",
+        effect: "Your body would function normally.",
+        fact: "Earth is the only known planet to harbor life.",
     },
     jupiter: {
-        name: "Júpiter",
+        name: "Jupiter",
         gravity: 24.79,
-        atmosphere: "Hidrógeno y Helio",
-        type: "Gaseoso",
+        atmosphere: "Hydrogen and Helium",
+        type: "Gas Giant",
         discoverer: "Galileo Galilei",
         life: "No",
-        effect: "Tu peso se multiplicaría más de dos veces.",
-        fact: "Júpiter es tan grande que podrías meter más de 1.300 Tierras dentro de él.",
+        effect: "Your weight would be more than double.",
+        fact: "Jupiter is so large it could fit over 1,300 Earths inside it.",
     },
 };
 
