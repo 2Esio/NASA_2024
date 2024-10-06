@@ -4,25 +4,7 @@
     <meta charset="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyRiders</title>
     <link rel="shortcut icon" href="Assets/Images/icon.jpeg">
-    <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
-        #controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-        }
-        button, input {
-            margin: 5px;
-        }
-        /* Cambiar el color del texto para que sea visible */
-        label {
-            color: white;
-        }
-    </style>
+    <link rel="stylesheet" href="Assets/Styles/style.css">
 </head>
 <body>
     <div id="controls">
@@ -31,9 +13,45 @@
         
         <button onclick="toggleLabels()">Toggle Labels</button>
         <button onclick="toggleOrbits()">Toggle Orbits</button>
-    </div>
-    <div id="instructions">
 
+        <div id="instructions">
+            <h3>Instructions</h3>
+            <div class="instruction-item">
+                <span>PC:</span> 
+                <ul>
+                    <li><strong>Click</strong> on a planet to zoom in on it.</li>
+                    <li><strong>Drag</strong> the mouse to rotate the view around the planets.</li>
+                    <li><strong>Scroll</strong> to zoom in or out for a better view of the solar system.</li>
+                    <li><strong>Right-click + Drag</strong> to pan across the scene.</li>
+                </ul>
+            </div>
+            <div class="instruction-item">
+                <span>Mobile:</span> 
+                <ul>
+                    <li><strong>Tap</strong> on a planet to zoom in on it.</li>
+                    <li><strong>Pinch</strong> with two fingers to zoom in or out.</li>
+                    <li><strong>Swipe</strong> to rotate the view around the planets.</li>
+                </ul>
+            </div>
+            <div class="instruction-item">
+                <span>Simulation Speed Control:</span>
+                <ul>
+                    <li>Use the slider to adjust the speed of the simulation. A lower value slows down the orbits, while a higher value speeds them up.</li>
+                </ul>
+            </div>
+            <div class="instruction-item">
+                <span>Toggle Labels:</span>
+                <ul>
+                    <li>This button shows or hides the names of the planets and celestial objects in the simulation.</li>
+                </ul>
+            </div>
+            <div class="instruction-item">
+                <span>Toggle Orbits:</span>
+                <ul>
+                    <li>This button shows or hides the orbital paths of the planets, making it easier to focus on the celestial bodies themselves.</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
