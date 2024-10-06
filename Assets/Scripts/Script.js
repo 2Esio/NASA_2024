@@ -48,16 +48,16 @@ const neptuneTexture = loader.load('Assets/Images/neptune.jpg');
 
 // Create celestial bodies
 const planets = [];
-const sun = createCelestialBody(5, sunTexture);
-const mercury = createCelestialBody(0.5, mercuryTexture); // Añadir Mercurio
-const venus = createCelestialBody(0.9, venusTexture);
-const earth = createCelestialBody(1, earthTexture);
-const moon = createCelestialBody(0.27, moonTexture);
-const mars = createCelestialBody(0.8, marsTexture);
-const jupiter = createCelestialBody(2, jupiterTexture);
-const saturn = createCelestialBody(1.8, saturnTexture);
-const uranus = createCelestialBody(1.2, uranusTexture);
-const neptune = createCelestialBody(1.3, neptuneTexture);
+const sun = createCelestialBody(5, sunTexture, 'sun');
+const mercury = createCelestialBody(0.5, mercuryTexture, 'mercury'); // Añadir Mercurio
+const venus = createCelestialBody(0.9, venusTexture, 'venus');
+const earth = createCelestialBody(1, earthTexture, 'earth');
+const moon = createCelestialBody(0.27, moonTexture, 'moon');
+const mars = createCelestialBody(0.8, marsTexture, 'mars');
+const jupiter = createCelestialBody(2, jupiterTexture, 'jupiter');
+const saturn = createCelestialBody(1.8, saturnTexture, 'saturn');
+const uranus = createCelestialBody(1.2, uranusTexture, 'uranus');
+const neptune = createCelestialBody(1.3, neptuneTexture, 'neptune');
 
 // Add Saturn's rings
 function createSaturnRings() {
@@ -111,16 +111,17 @@ let timeSpeed = 1; // Default speed control
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-// Function to create celestial bodies
-function createCelestialBody(size, texture) {
+// Función para crear cuerpos celestes, ahora con nombre
+function createCelestialBody(size, texture, name) {
     const geometry = new THREE.SphereGeometry(size, 32, 32);
     const material = new THREE.MeshBasicMaterial({ map: texture });
     const body = new THREE.Mesh(geometry, material);
+    body.name = name;  // Asignar el nombre al cuerpo
     scene.add(body);
     return body;
 }
 
-// Function to create labels
+// Función para crear labels
 function createLabel(name, planet) {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
@@ -138,7 +139,7 @@ function createLabel(name, planet) {
     return { sprite, planet };
 }
 
-// Function to create orbits
+// Función para crear órbitas
 function createOrbit(radius, color) {
     const curve = new THREE.EllipseCurve(
         0, 0,            // ax, ay
@@ -183,6 +184,94 @@ function toggleOrbits() {
     orbitsVisible = !orbitsVisible;
     orbits.forEach(orbit => orbit.visible = orbitsVisible);
 }
+
+// Función para mostrar la información al hacer clic en un planeta o luna
+const celestialBodiesInfo = {
+    mercury: {
+        name: "Mercurio",
+        gravity: 3.7,
+        atmosphere: "Ninguna",
+        type: "Rocoso",
+        discoverer: "Desconocido",
+        life: "No",
+        effect: "Tu peso sería mucho menor.",
+        fact: "Mercurio es el planeta más cercano al Sol, pero no el más caliente.",
+    },
+    venus: {
+        name: "Venus",
+        gravity: 8.87,
+        atmosphere: "Dióxido de Carbono",
+        type: "Rocoso",
+        discoverer: "Desconocido",
+        life: "No",
+        effect: "Tu cuerpo soportaría una presión aplastante.",
+        fact: "Venus tiene temperaturas superiores a 450 °C.",
+    },
+    earth: {
+        name: "Tierra",
+        gravity: 9.81,
+        atmosphere: "Nitrógeno y Oxígeno",
+        type: "Rocoso",
+        discoverer: "Desconocido",
+        life: "Sí",
+        effect: "Tu cuerpo funcionaría normalmente.",
+        fact: "La Tierra es el único planeta conocido que alberga vida.",
+    },
+    jupiter: {
+        name: "Júpiter",
+        gravity: 24.79,
+        atmosphere: "Hidrógeno y Helio",
+        type: "Gaseoso",
+        discoverer: "Galileo Galilei",
+        life: "No",
+        effect: "Tu peso se multiplicaría más de dos veces.",
+        fact: "Júpiter es tan grande que podrías meter más de 1.300 Tierras dentro de él.",
+    },
+};
+
+// Función para desplegar la información
+function showPlanetInfo(planetName) {
+    console.log("Mostrando información de: ", planetName); // Verificar que el nombre del planeta está correcto
+    const info = celestialBodiesInfo[planetName.toLowerCase()];  // Asegurar minúsculas
+
+    if (info) {
+        document.getElementById('planet-name').textContent = info.name;
+        document.getElementById('planet-gravity').textContent = info.gravity;
+        document.getElementById('planet-atmosphere').textContent = info.atmosphere;
+        document.getElementById('planet-type').textContent = info.type;
+        document.getElementById('planet-discoverer').textContent = info.discoverer;
+        document.getElementById('planet-life').textContent = info.life;
+        document.getElementById('planet-effect').textContent = info.effect;
+        document.getElementById('planet-fact').textContent = info.fact;
+        document.getElementById('info-container').style.display = 'block';  // Asegurarse de que se muestre el contenedor
+    } else {
+        console.log("No se encontró información para: ", planetName);
+    }
+}
+
+// Función para manejar clics y desplegar la información
+function onMouseClick(event) {
+    if (zoomInProgress) return;  // Prevenir clics durante el zoom
+    if (event.target.closest('#controls')) {
+        return;  // Prevenir interacciones en los controles
+    }
+
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(planets);
+
+    if (intersects.length > 0) {
+        const selectedPlanet = intersects[0].object.name.toLowerCase(); // Obtener el nombre del planeta seleccionado
+        showPlanetInfo(selectedPlanet); // Mostrar la información
+        zoomToPlanet(intersects[0].object); // Hacer zoom en el planeta
+    } else if (isZoomedIn) {
+        resetZoom();
+    }
+}
+
+window.addEventListener('click', onMouseClick, false);
 
 // Function to zoom into a planet with zoom limits
 function zoomToPlanet(planet) {
@@ -275,113 +364,6 @@ const sunRotationSpeed = 0.01;  // Rotación lenta del Sol
 document.getElementById('speedRange').addEventListener('input', (event) => {
     timeSpeed = parseFloat(event.target.value);
 });
-
-// Event listeners for click and double click
-function onMouseClick(event) {
-    if (zoomInProgress) return;  // Prevenir clics durante el zoom
-    if (event.target.closest('#controls')) {
-        return;  // Prevenir interacciones en los controles
-    }
-
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(planets);
-
-    if (intersects.length > 0) {
-        zoomToPlanet(intersects[0].object);
-    } else if (isZoomedIn) {
-        resetZoom();
-    }
-}
-
-// Doble clic - prevenir zoom al centro del sistema solar
-function onDoubleClick(event) {
-    // Prevenir el doble clic si ya está haciendo zoom o el zoom ha sido completado
-    if (zoomInProgress || !zoomTarget) return;
-}
-// Información de cada planeta o luna
-const celestialBodiesInfo = {
-    earth: {
-        name: "Tierra",
-        gravity: 9.81,
-        atmosphere: "Nitrógeno y Oxígeno",
-        type: "Rocoso",
-        discoverer: "Desconocido",
-        life: "Sí",
-        effect: "Tu cuerpo funcionaría normalmente.",
-        fact: "La Tierra es el único planeta conocido que alberga vida.",
-    },
-    jupiter: {
-        name: "Júpiter",
-        gravity: 24.79,
-        atmosphere: "Hidrógeno y Helio",
-        type: "Gaseoso",
-        discoverer: "Galileo Galilei",
-        life: "No",
-        effect: "Tu peso se multiplicaría más de dos veces.",
-        fact: "Júpiter es tan grande que podrías meter más de 1.300 Tierras dentro de él.",
-    },
-    // Agrega aquí información para otros planetas y lunas
-};
-
-// Función para mostrar la información al hacer clic en un planeta
-function showPlanetInfo(planetName) {
-    const info = celestialBodiesInfo[planetName];
-
-    if (info) {
-        document.getElementById('planet-name').textContent = info.name;
-        document.getElementById('planet-gravity').textContent = info.gravity;
-        document.getElementById('planet-atmosphere').textContent = info.atmosphere;
-        document.getElementById('planet-type').textContent = info.type;
-        document.getElementById('planet-discoverer').textContent = info.discoverer;
-        document.getElementById('planet-life').textContent = info.life;
-        document.getElementById('planet-effect').textContent = info.effect;
-        document.getElementById('planet-fact').textContent = info.fact;
-        document.getElementById('info-container').style.display = 'block';
-    }
-}
-
-// Función para calcular el peso en el planeta
-function calculateWeight() {
-    const weightOnEarth = parseFloat(document.getElementById('weight-input').value);
-    const gravity = parseFloat(document.getElementById('planet-gravity').textContent);
-    const earthGravity = 9.81; // Gravedad de la Tierra
-
-    if (!isNaN(weightOnEarth)) {
-        const weightOnPlanet = (weightOnEarth / earthGravity) * gravity;
-        document.getElementById('planet-weight-result').textContent = weightOnPlanet.toFixed(2);
-    } else {
-        alert("Por favor, introduce un peso válido.");
-    }
-}
-
-// Evento de clic en el planeta para mostrar su información
-function onMouseClick(event) {
-    if (zoomInProgress) return;  // Prevenir clics durante el zoom
-    if (event.target.closest('#controls')) {
-        return;  // Prevenir interacciones en los controles
-    }
-
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(planets);
-
-    if (intersects.length > 0) {
-        const selectedPlanet = intersects[0].object.name.toLowerCase(); // Obtener el nombre del planeta seleccionado
-        showPlanetInfo(selectedPlanet); // Mostrar la información
-        zoomToPlanet(intersects[0].object); // Hacer zoom en el planeta
-    } else if (isZoomedIn) {
-        resetZoom();
-    }
-}
-
-// Raycasting to detect clicks or touches on planets or moon
-window.addEventListener('click', onMouseClick, false);
-window.addEventListener('dblclick', onDoubleClick, false);
 
 // Animation loop
 function animate() {
