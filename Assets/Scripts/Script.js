@@ -341,16 +341,31 @@ function createLabel(name, planet) {
 }
 
 // Function to create orbits
-function createOrbit(radius, color) {
-    const curve = new THREE.EllipseCurve(0, 0, radius, radius, 0, 2 * Math.PI, false, 0);
-    const points = curve.getPoints(100);
+// Function to create elliptical orbits with inclination
+function createOrbit(orbitRadius, eccentricity, inclination, color) {
+    const semiMajorAxis = orbitRadius;
+    const semiMinorAxis = semiMajorAxis * Math.sqrt(1 - Math.pow(eccentricity, 2)); // Elipse basada en la excentricidad
+
+    const curve = new THREE.EllipseCurve(
+        0, 0, // Centro de la elipse
+        semiMajorAxis, semiMinorAxis, // Ejes mayor y menor
+        0, 2 * Math.PI, // Ángulo de inicio y final
+        false, 0
+    );
+
+    const points = curve.getPoints(100); // Más puntos para mayor detalle
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const material = new THREE.LineBasicMaterial({ color: color });
     const orbit = new THREE.Line(geometry, material);
-    orbit.rotation.x = Math.PI / 2;
+
+    // Aplicar inclinación en el eje Y (debido a la rotación de la órbita en el plano XZ)
+    orbit.rotation.x = THREE.Math.degToRad(inclination);
+
     scene.add(orbit);
     return orbit;
 }
+
+
 
 function createOrbitAroundPlanet(radius, color, planet) {
     const curve = new THREE.EllipseCurve(
@@ -375,7 +390,9 @@ function toggleLabels() {
 
 function toggleOrbits() {
     orbitsVisible = !orbitsVisible;
-    orbits.forEach(orbit => orbit.visible = orbitsVisible);
+    orbits.forEach(orbit => {
+        orbit.visible = orbitsVisible;
+    });
 }
 
 // Handle click and touch events
@@ -484,6 +501,71 @@ orbitControls.addEventListener('change', () => {
         camera.lookAt(zoomTarget.position);
     }
 });
+// Step 1: Fetch Near-Earth Comets Data
+// Step 1: Fetch Near-Earth Comets Data
+async function fetchComets() {
+    try {
+        const response = await fetch('https://data.nasa.gov/resource/b67r-rgxc.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const cometsData = await response.json();
+        console.log('Comets Data:', cometsData); // Verificar si los datos llegan aquí
+        processCometsData(cometsData);
+    } catch (error) {
+        console.error('Error fetching comets data:', error); // Mostrar el error en la consola
+    }
+}
+
+// Llamar a la función al cargar la escena
+fetchComets();
+
+
+// Step 2: Process the comets data
+function processCometsData(comets) {
+    comets.forEach(comet => {
+        if (comet.object.startsWith('C/') || comet.object.startsWith('P/')) {
+            console.log('Processing comet:', comet.object);
+
+            const size = comet.size || 2;
+            const semiMajorAxis = comet.semi_major_axis || Math.random() * 50 + 30; // Semieje mayor
+            const eccentricity = comet.e || 0.5; // Excentricidad
+            const inclination = comet.i_deg || 0; // Inclinación en grados
+            const rotationSpeed = comet.rotation_period || 0.005;
+            const translationSpeed = comet.orbital_period || 0.005;
+
+            // Crear el cuerpo del cometa
+            const cometTexture = loader.load('Assets/Images/moon.jpg');
+            const cometBody = createCelestialBody(size, cometTexture, comet.object);
+
+            // Crear la órbita elíptica e inclinada y agregarla al array `orbits`
+            const cometOrbit = createOrbit(semiMajorAxis, eccentricity, inclination, 0xffffff);
+            orbits.push(cometOrbit);
+
+            // Añadir el cometa al array de planetas para la animación
+            planets.push(cometBody);
+
+            // Movimiento del cometa (rotación y traslación)
+            let cometAngle = 0;
+            function updateCometPosition() {
+                cometAngle += translationSpeed * timeSpeed;
+                cometBody.position.set(
+                    Math.cos(cometAngle) * semiMajorAxis,
+                    0,
+                    Math.sin(cometAngle) * semiMajorAxis * Math.sqrt(1 - Math.pow(eccentricity, 2)) // Ajuste elíptico
+                );
+            }
+
+            // Añadir la función de actualización a la animación
+            animateCometFunctions.push(updateCometPosition);
+        }
+    });
+}
+
+
+
+// Step 3: Call the fetch function to load comets data when the scene is initialized
+fetchComets();
 // Animations for planet rotations
 const mercuryOrbitRadius = 8;
 let mercuryAngle = 0;
@@ -540,7 +622,7 @@ const erisOrbitRadius = 90;
 document.getElementById('speedRange').addEventListener('input', (event) => {
     timeSpeed = parseFloat(event.target.value);
 });
-
+let animateCometFunctions = []; 
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
@@ -580,6 +662,8 @@ function animate() {
 
     // Update Sun's rotation
     sun.rotation.y += sunRotationSpeed;
+
+    animateCometFunctions.forEach(updateFunction => updateFunction());
     // Si está con zoom, hacer que la cámara siga al planeta
     if (isZoomedIn && zoomTarget && !isManualControl) {
         const followDistance = 10;
