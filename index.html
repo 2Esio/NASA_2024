@@ -53,30 +53,29 @@
             </div>
         </div>
     </div>
+    
     <div id="info-container">
-        <h2 id="planet-name">Planeta</h2>
-        <p><strong>Gravedad:</strong> <span id="planet-gravity"></span> m/s²</p>
-        <p><strong>Atmósfera:</strong> <span id="planet-atmosphere"></span></p>
-        <p><strong>Tipo:</strong> <span id="planet-type"></span></p>
-        <p><strong>Descubridor:</strong> <span id="planet-discoverer"></span></p>
-        <p><strong>Alberga vida:</strong> <span id="planet-life"></span></p>
-        <p><strong>Efecto en tu cuerpo:</strong> <span id="planet-effect"></span></p>
+        <h2 id="planet-name">Planet</h2>
+        <p><strong>Gravity:</strong> <span id="planet-gravity"></span> m/s²</p>
+        <p><strong>Atmosphere:</strong> <span id="planet-atmosphere"></span></p>
+        <p><strong>Type:</strong> <span id="planet-type"></span></p>
+        <p><strong>Discoverer:</strong> <span id="planet-discoverer"></span></p>
+        <p><strong>Supports Life:</strong> <span id="planet-life"></span></p>
+        <p><strong>Effect on your body:</strong> <span id="planet-effect"></span></p>
         
-        <!-- Cálculo del peso en el planeta -->
-        <p><strong>Tu peso en este planeta:</strong></p>
-        <input type="number" id="weight-input" placeholder="Tu peso en la Tierra (kg)">
-        <button onclick="calculateWeight()">Calcular</button>
-        <p><strong>Peso en este planeta:</strong> <span id="planet-weight-result"></span> kg</p>
+        <p><strong>Your weight on this planet:</strong></p>
+        <input type="number" id="weight-input" placeholder="Your weight on Earth (kg)">
+        <button onclick="calculateWeight()">Calculate</button>
+        <p><strong>Weight on this planet:</strong> <span id="planet-weight-result"></span> kg</p>
         
-        <!-- Datos curiosos -->
-        <p><strong>Dato curioso:</strong> <span id="planet-fact"></span></p>
+        <p><strong>Fun Fact:</strong> <span id="planet-fact"></span></p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
 
-    <!-- Referencia al archivo JavaScript externo -->
+    <!-- Reference to the external JavaScript file -->
     <script src="Assets/Scripts/Script.js"></script>
 </body>
 </html>
