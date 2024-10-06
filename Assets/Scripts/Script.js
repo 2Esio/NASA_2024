@@ -666,6 +666,17 @@ function updateAsteroids() {
 }
 
 
+// Stop scrolling propagation to the page when inside the info container
+infoContainer.addEventListener('touchmove', function(event) {
+    event.stopPropagation(); // Prevent the event from bubbling up to the document
+}, { passive: true });
+
+infoContainer.addEventListener('wheel', function(event) {
+    event.stopPropagation(); // For desktop devices with mouse scroll
+}, { passive: true });
+
+
+
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
