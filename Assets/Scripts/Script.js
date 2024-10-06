@@ -42,6 +42,7 @@ const venusTexture = loader.load('Assets/Images/venus.jpg');
 const marsTexture = loader.load('Assets/Images/mars.jpg');
 const jupiterTexture = loader.load('Assets/Images/jupiter.jpg');
 const saturnTexture = loader.load('Assets/Images/saturn.jpg');
+const saturnRingTexture = loader.load('Assets/Images/rings.png');  // Textura de los anillos de Saturno
 const uranusTexture = loader.load('Assets/Images/uranus.jpg');
 const neptuneTexture = loader.load('Assets/Images/neptune.jpg');
 
@@ -57,6 +58,23 @@ const jupiter = createCelestialBody(2, jupiterTexture);
 const saturn = createCelestialBody(1.8, saturnTexture);
 const uranus = createCelestialBody(1.2, uranusTexture);
 const neptune = createCelestialBody(1.3, neptuneTexture);
+
+// Add Saturn's rings
+function createSaturnRings() {
+    const ringGeometry = new THREE.RingGeometry(2.5, 3.5, 64); // Geometría de los anillos (ajustar el tamaño si es necesario)
+    const ringMaterial = new THREE.MeshBasicMaterial({
+        map: saturnRingTexture, // Usar la textura de los anillos
+        side: THREE.DoubleSide, // Hacer que los anillos sean visibles desde ambos lados
+        transparent: true       // Hacer los anillos parcialmente transparentes
+    });
+
+    const saturnRings = new THREE.Mesh(ringGeometry, ringMaterial);
+    saturnRings.rotation.x = Math.PI / 2; // Alinear los anillos en el plano x-z
+    saturn.add(saturnRings); // Añadir los anillos como parte de Saturno
+}
+
+// Llamar a la función para agregar los anillos
+createSaturnRings();
 
 planets.push(sun, mercury, venus, earth, moon, mars, jupiter, saturn, uranus, neptune);
 
