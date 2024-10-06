@@ -3,7 +3,7 @@ const scene = new THREE.Scene();
 
 // Load background texture (Starfield)
 const loader = new THREE.TextureLoader();
-const bgTexture = loader.load('src/background.jpg');
+const bgTexture = loader.load('Assets/Images/background.jpg');
 scene.background = bgTexture;
 
 // Set up camera and view states
@@ -25,16 +25,16 @@ orbitControls.enableZoom = true; // Enable zoom by default for planet view
 const pointerControls = new THREE.PointerLockControls(camera, renderer.domElement);
 
 // Load celestial bodies textures
-const sunTexture = loader.load('src/sun.jpg');
-const earthTexture = loader.load('src/earth.jpg');
-const moonTexture = loader.load('src/moon.jpg');
-const mercuryTexture = loader.load('src/mercury.jpg');
-const venusTexture = loader.load('src/venus.jpg');
-const marsTexture = loader.load('src/mars.jpg');
-const jupiterTexture = loader.load('src/jupiter.jpg');
-const saturnTexture = loader.load('src/saturn.jpg');
-const uranusTexture = loader.load('src/uranus.jpg');
-const neptuneTexture = loader.load('src/neptune.jpg');
+const sunTexture = loader.load('Assets/Images/sun.jpg');
+const earthTexture = loader.load('Assets/Images/earth.jpg');
+const moonTexture = loader.load('Assets/Images/moon.jpg');
+const mercuryTexture = loader.load('Assets/Images/mercury.jpg');
+const venusTexture = loader.load('Assets/Images/venus.jpg');
+const marsTexture = loader.load('Assets/Images/mars.jpg');
+const jupiterTexture = loader.load('Assets/Images/jupiter.jpg');
+const saturnTexture = loader.load('Assets/Images/saturn.jpg');
+const uranusTexture = loader.load('Assets/Images/uranus.jpg');
+const neptuneTexture = loader.load('Assets/Images/neptune.jpg');
 
 // Create celestial bodies
 const planets = [];
@@ -187,7 +187,7 @@ function onMouseClick(event) {
 }
 
 // Load textures for Saturn's rings
-const saturnRingTexture = loader.load('src/rings.png');
+const saturnRingTexture = loader.load('Assets/Images/rings.png');
 
 // Function to create Saturn's rings
 function createSaturnRings() {
