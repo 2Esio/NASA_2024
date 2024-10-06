@@ -425,7 +425,6 @@ function processCometsData(cometsData) {
             console.log('Processing comet:', comet.object);
             const size = comet.size || 0.7;
             const semiMajorAxis = comet.semi_major_axis || Math.random() * 50 + 30; // Semieje mayor
-            const eccentricity = comet.e || 0.5; // Excentricidad
             const translationSpeed = comet.orbital_period || 0.005;
 
             // Crear el cuerpo del cometa
@@ -441,16 +440,16 @@ function processCometsData(cometsData) {
             cometOrbits.push(cometOrbit);
 
             // Obtener los puntos de la geometría de la órbita
-            const points = cometOrbit.geometry.attributes.position.array; 
+            const points = cometOrbit.geometry.attributes.position.array;
             const numPoints = points.length / 3;  // Cada punto tiene 3 coordenadas (x, y, z)
-            let cometAngle = 0; // Ángulo para determinar la posición en la órbita
+            let cometProgress = 0; // Progreso para determinar la posición en la órbita
 
             // Función para actualizar la posición del cometa
             function updateCometPosition() {
-                cometAngle += translationSpeed * timeSpeed; // Incrementar el ángulo con la velocidad ajustada
+                cometProgress += translationSpeed * timeSpeed; // Incrementar el progreso con la velocidad ajustada
 
-                // Normalizar el ángulo para asegurarse de que esté dentro del rango de puntos
-                const pointIndex = Math.floor((cometAngle % numPoints) * 3); // Obtener el índice correcto en la órbita
+                // Normalizar el progreso para asegurarse de que esté dentro del rango de puntos
+                const pointIndex = Math.floor((cometProgress % 1) * numPoints) * 3; // Obtener el índice correcto en la órbita
 
                 // Obtener las coordenadas del punto actual en la órbita
                 const x = points[pointIndex];
@@ -466,6 +465,7 @@ function processCometsData(cometsData) {
         }
     });
 }
+
 
 
 // Step 3: Call the fetch function to load comets data when the scene is initialized
