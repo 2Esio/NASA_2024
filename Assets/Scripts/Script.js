@@ -260,6 +260,16 @@ const celestialBodiesInfo = {
         effect: "Your weight would be extremely light.",
         fact: "Eris is one of the most massive dwarf planets."
     },
+    moon:{
+        name: "Moon",
+        gravity: "1.62 m/s²",
+        atmosphere: "None",
+        type: "Natural Satellite",
+        discoverer: "Unknown",
+        life: "No",
+        effect: "You would feel much lighter.",
+        fact: "The Moon always shows the same face to the Earth due to synchronous rotation."
+    }
 };
 
 // Función para mostrar la información del planeta seleccionado
