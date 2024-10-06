@@ -51,11 +51,15 @@ const saturnTexture = loader.load('Assets/Images/saturn.jpg');
 const saturnRingTexture = loader.load('Assets/Images/rings.png');  // Textura de los anillos de Saturno
 const uranusTexture = loader.load('Assets/Images/uranus.jpg');
 const neptuneTexture = loader.load('Assets/Images/neptune.jpg');
+const ceresTexture = loader.load('Assets/Images/ceres.jpg'); // Textura de Ceres
+const erisTexture = loader.load('Assets/Images/eris.jpg');   // Textura de Eris
+const plutoTexture = loader.load('Assets/Images/pluto.jpg'); // Textura de Plutón
+const asteroidBeltTexture = loader.load('Assets/Images/asteroid_belt.png'); // Textura del cinturón de asteroides
 
 // Create celestial bodies
 const planets = [];
 const sun = createCelestialBody(5, sunTexture, 'sun');
-const mercury = createCelestialBody(0.5, mercuryTexture, 'mercury'); // Añadir Mercurio
+const mercury = createCelestialBody(0.5, mercuryTexture, 'mercury');
 const venus = createCelestialBody(0.9, venusTexture, 'venus');
 const earth = createCelestialBody(1, earthTexture, 'earth');
 const moon = createCelestialBody(0.27, moonTexture, 'moon');
@@ -64,30 +68,43 @@ const jupiter = createCelestialBody(2, jupiterTexture, 'jupiter');
 const saturn = createCelestialBody(1.8, saturnTexture, 'saturn');
 const uranus = createCelestialBody(1.2, uranusTexture, 'uranus');
 const neptune = createCelestialBody(1.3, neptuneTexture, 'neptune');
+const ceres = createCelestialBody(0.3, ceresTexture, 'ceres');
+const eris = createCelestialBody(0.5, erisTexture, 'eris');
+const pluto = createCelestialBody(0.4, plutoTexture, 'pluto');
 
 // Add Saturn's rings
 function createSaturnRings() {
     const ringGeometry = new THREE.RingGeometry(2.5, 3.5, 64); // Geometría de los anillos (ajustar el tamaño si es necesario)
     const ringMaterial = new THREE.MeshBasicMaterial({
-        map: saturnRingTexture, // Usar la textura de los anillos
-        side: THREE.DoubleSide, // Hacer que los anillos sean visibles desde ambos lados
-        transparent: true       // Hacer los anillos parcialmente transparentes
+        map: saturnRingTexture,
+        side: THREE.DoubleSide,
+        transparent: true
     });
 
     const saturnRings = new THREE.Mesh(ringGeometry, ringMaterial);
-    saturnRings.rotation.x = Math.PI / 2; // Alinear los anillos en el plano x-z
-    saturn.add(saturnRings); // Añadir los anillos como parte de Saturno
+    saturnRings.rotation.x = Math.PI / 2;
+    saturn.add(saturnRings);
 }
 
-// Llamar a la función para agregar los anillos
 createSaturnRings();
 
-planets.push(sun, mercury, venus, earth, moon, mars, jupiter, saturn, uranus, neptune);
+// Add asteroid belt
+const asteroidBeltGeometry = new THREE.RingGeometry(40, 42, 64);
+const asteroidBeltMaterial = new THREE.MeshBasicMaterial({
+    map: asteroidBeltTexture,
+    side: THREE.DoubleSide,
+    transparent: true
+});
+const asteroidBelt = new THREE.Mesh(asteroidBeltGeometry, asteroidBeltMaterial);
+asteroidBelt.rotation.x = Math.PI / 2; // Alinear el cinturón en el plano x-z
+scene.add(asteroidBelt);
+
+planets.push(sun, mercury, venus, earth, moon, mars, jupiter, saturn, uranus, neptune, ceres, eris, pluto);
 
 // Add labels
 const labels = [];
 labels.push(createLabel('Sun', sun));
-labels.push(createLabel('Mercury', mercury));  // Añadir label para Mercurio
+labels.push(createLabel('Mercury', mercury));
 labels.push(createLabel('Venus', venus));
 labels.push(createLabel('Earth', earth));
 labels.push(createLabel('Moon', moon));
@@ -96,18 +113,22 @@ labels.push(createLabel('Jupiter', jupiter));
 labels.push(createLabel('Saturn', saturn));
 labels.push(createLabel('Uranus', uranus));
 labels.push(createLabel('Neptune', neptune));
+labels.push(createLabel('Ceres', ceres));
+labels.push(createLabel('Eris', eris));
+labels.push(createLabel('Pluto', pluto));
 
 // Add orbits
 const orbits = [];
-orbits.push(createOrbit(8, 0xaaaaaa)); // Añadir órbita de Mercurio
-orbits.push(createOrbit(20, 0x00ff00)); // Earth's orbit
-orbits.push(createOrbit(30, 0xff0000)); // Mars' orbit
-orbits.push(createOrbit(15, 0x0000ff)); // Venus' orbit
-orbits.push(createOrbitAroundPlanet(2, 0xffffff, earth)); // Moon's orbit around Earth
-orbits.push(createOrbit(40, 0xffa500)); // Jupiter's orbit
-orbits.push(createOrbit(50, 0xffff00)); // Saturn's orbit
-orbits.push(createOrbit(60, 0x00ffff)); // Uranus's orbit
-orbits.push(createOrbit(70, 0x0000ff)); // Neptune's orbit
+orbits.push(createOrbit(8, 0xaaaaaa));
+orbits.push(createOrbit(20, 0x00ff00));
+orbits.push(createOrbit(30, 0xff0000));
+orbits.push(createOrbit(15, 0x0000ff));
+orbits.push(createOrbitAroundPlanet(2, 0xffffff, earth));
+orbits.push(createOrbit(40, 0xffa500));
+orbits.push(createOrbit(50, 0xffff00));
+orbits.push(createOrbit(60, 0x00ffff));
+orbits.push(createOrbit(70, 0x0000ff));
+orbits.push(createOrbit(85, 0x8b4513)); // Cinturón de asteroides
 
 let labelsVisible = true;
 let orbitsVisible = true;
@@ -122,7 +143,7 @@ function createCelestialBody(size, texture, name) {
     const geometry = new THREE.SphereGeometry(size, 32, 32);
     const material = new THREE.MeshBasicMaterial({ map: texture });
     const body = new THREE.Mesh(geometry, material);
-    body.name = name;  // Asignar el nombre al cuerpo
+    body.name = name;
     scene.add(body);
     return body;
 }
@@ -134,48 +155,47 @@ function createLabel(name, planet) {
     context.font = '30px Arial';
     context.fillStyle = 'white';
     context.fillText(name, 0, 30);
-    
+
     const texture = new THREE.CanvasTexture(canvas);
     const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
     const sprite = new THREE.Sprite(spriteMaterial);
     sprite.scale.set(4, 2, 1);
     scene.add(sprite);
 
-    // Return both sprite and planet to update position
     return { sprite, planet };
 }
 
 // Función para crear órbitas
 function createOrbit(radius, color) {
     const curve = new THREE.EllipseCurve(
-        0, 0,            // ax, ay
-        radius, radius,   // xRadius, yRadius
-        0, 2 * Math.PI,   // startAngle, endAngle
-        false,            // clockwise
-        0                 // rotation
+        0, 0,
+        radius, radius,
+        0, 2 * Math.PI,
+        false,
+        0
     );
     const points = curve.getPoints(100);
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const material = new THREE.LineBasicMaterial({ color: color });
     const orbit = new THREE.Line(geometry, material);
-    orbit.rotation.x = Math.PI / 2; // Rotate to lie flat on the x-z plane
+    orbit.rotation.x = Math.PI / 2;
     scene.add(orbit);
     return orbit;
 }
 
 function createOrbitAroundPlanet(radius, color, planet) {
     const curve = new THREE.EllipseCurve(
-        planet.position.x, planet.position.z,  // ax, ay (centered on the planet)
-        radius, radius,   // xRadius, yRadius
-        0, 2 * Math.PI,   // startAngle, endAngle
-        false,            // clockwise
-        0                 // rotation
+        planet.position.x, planet.position.z,
+        radius, radius,
+        0, 2 * Math.PI,
+        false,
+        0
     );
     const points = curve.getPoints(100);
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const material = new THREE.LineBasicMaterial({ color: color });
     const orbit = new THREE.Line(geometry, material);
-    orbit.rotation.x = Math.PI / 2; // Rotate to lie flat on the x-z plane
+    orbit.rotation.x = Math.PI / 2;
     scene.add(orbit);
     return orbit;
 }
@@ -201,7 +221,7 @@ const celestialBodiesInfo = {
         discoverer: "Unknown",
         life: "No",
         effect: "Your weight would be much lighter.",
-        fact: "Mercury is the closest planet to the Sun but not the hottest.",
+        fact: "Mercury is the closest planet to the Sun but not the hottest."
     },
     venus: {
         name: "Venus",
@@ -211,7 +231,7 @@ const celestialBodiesInfo = {
         discoverer: "Unknown",
         life: "No",
         effect: "Your body would experience crushing pressure.",
-        fact: "Venus has temperatures over 450°C.",
+        fact: "Venus has temperatures over 450°C."
     },
     earth: {
         name: "Earth",
@@ -221,7 +241,17 @@ const celestialBodiesInfo = {
         discoverer: "Unknown",
         life: "Yes",
         effect: "Your body would function normally.",
-        fact: "Earth is the only known planet to harbor life.",
+        fact: "Earth is the only known planet to harbor life."
+    },
+    mars: {
+        name: "Mars",
+        gravity: 3.71,
+        atmosphere: "Carbon Dioxide",
+        type: "Rocky",
+        discoverer: "Galileo Galilei",
+        life: "No",
+        effect: "Your weight would be much lighter.",
+        fact: "Mars is home to the tallest mountain in the solar system."
     },
     jupiter: {
         name: "Jupiter",
@@ -231,14 +261,74 @@ const celestialBodiesInfo = {
         discoverer: "Galileo Galilei",
         life: "No",
         effect: "Your weight would be more than double.",
-        fact: "Jupiter is so large it could fit over 1,300 Earths inside it.",
+        fact: "Jupiter is so large it could fit over 1,300 Earths inside it."
     },
+    saturn: {
+        name: "Saturn",
+        gravity: 10.44,
+        atmosphere: "Hydrogen and Helium",
+        type: "Gas Giant",
+        discoverer: "Galileo Galilei",
+        life: "No",
+        effect: "Your weight would be heavier.",
+        fact: "Saturn is known for its stunning ring system."
+    },
+    uranus: {
+        name: "Uranus",
+        gravity: 8.69,
+        atmosphere: "Hydrogen and Helium",
+        type: "Gas Giant",
+        discoverer: "William Herschel",
+        life: "No",
+        effect: "Your weight would be slightly less.",
+        fact: "Uranus rotates on its side."
+    },
+    neptune: {
+        name: "Neptune",
+        gravity: 11.15,
+        atmosphere: "Hydrogen, Helium, and Methane",
+        type: "Gas Giant",
+        discoverer: "Johann Galle",
+        life: "No",
+        effect: "Your weight would be heavier.",
+        fact: "Neptune has supersonic winds."
+    },
+    ceres: {
+        name: "Ceres",
+        gravity: 0.27,
+        atmosphere: "None",
+        type: "Dwarf Planet",
+        discoverer: "Giuseppe Piazzi",
+        life: "No",
+        effect: "Your weight would be significantly lighter.",
+        fact: "Ceres is the largest object in the asteroid belt."
+    },
+    eris: {
+        name: "Eris",
+        gravity: 0.82,
+        atmosphere: "None",
+        type: "Dwarf Planet",
+        discoverer: "Mike Brown",
+        life: "No",
+        effect: "Your weight would be much lighter.",
+        fact: "Eris is one of the most massive dwarf planets."
+    },
+    pluto: {
+        name: "Pluto",
+        gravity: 0.62,
+        atmosphere: "Nitrogen",
+        type: "Dwarf Planet",
+        discoverer: "Clyde Tombaugh",
+        life: "No",
+        effect: "Your weight would be significantly lighter.",
+        fact: "Pluto was reclassified from planet to dwarf planet."
+    }
 };
 
 // Función para desplegar la información
 function showPlanetInfo(planetName) {
-    console.log("Mostrando información de: ", planetName); // Verificar que el nombre del planeta está correcto
-    const info = celestialBodiesInfo[planetName.toLowerCase()];  // Asegurar minúsculas
+    console.log("Mostrando información de: ", planetName);
+    const info = celestialBodiesInfo[planetName.toLowerCase()];
 
     if (info) {
         document.getElementById('planet-name').textContent = info.name;
@@ -249,7 +339,17 @@ function showPlanetInfo(planetName) {
         document.getElementById('planet-life').textContent = info.life;
         document.getElementById('planet-effect').textContent = info.effect;
         document.getElementById('planet-fact').textContent = info.fact;
-        document.getElementById('info-container').style.display = 'block';  // Asegurarse de que se muestre el contenedor
+
+        // Mostrar u ocultar el cálculo de peso basado en el planeta seleccionado
+        if (planetName.toLowerCase() === 'earth') {
+            document.getElementById('weight-input').style.display = 'none';
+            document.getElementById('weight-output').style.display = 'none';
+        } else {
+            document.getElementById('weight-input').style.display = 'block';
+            document.getElementById('weight-output').style.display = 'block';
+        }
+
+        document.getElementById('info-container').style.display = 'block';  // Mostrar el contenedor
     } else {
         console.log("No se encontró información para: ", planetName);
     }
@@ -257,9 +357,9 @@ function showPlanetInfo(planetName) {
 
 // Función para manejar clics y desplegar la información
 function onMouseClick(event) {
-    if (zoomInProgress) return;  // Prevenir clics durante el zoom
+    if (zoomInProgress) return;
     if (event.target.closest('#controls')) {
-        return;  // Prevenir interacciones en los controles
+        return;
     }
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -269,20 +369,23 @@ function onMouseClick(event) {
     const intersects = raycaster.intersectObjects(planets);
 
     if (intersects.length > 0) {
-        const selectedPlanet = intersects[0].object.name.toLowerCase(); // Obtener el nombre del planeta seleccionado
+        const selectedPlanet = intersects[0].object.name.toLowerCase();
         showPlanetInfo(selectedPlanet); // Mostrar la información
         zoomToPlanet(intersects[0].object); // Hacer zoom en el planeta
     } else if (isZoomedIn) {
         resetZoom();
+        // hidePlanetInfo(); // Eliminar si se desea mantener la info visible
     }
 }
 
+// Escucha tanto para clics en computadoras como dispositivos móviles
 window.addEventListener('click', onMouseClick, false);
+window.addEventListener('touchstart', onMouseClick, false);
 
 // Function to zoom into a planet with zoom limits
 function zoomToPlanet(planet) {
     if (zoomInProgress || lastClickedPlanet === planet) {
-        return;  // Prevenir múltiples clics o clics rápidos
+        return;
     }
     isZoomedIn = true;
     zoomTarget = planet;
@@ -290,18 +393,17 @@ function zoomToPlanet(planet) {
     orbitControls.target.copy(planet.position);
     orbitControls.update();
 
-    lastClickedPlanet = planet;  // Guardar el último planeta clicado
-    zoomInProgress = true;  // Indicar que un zoom está en progreso
+    lastClickedPlanet = planet;
+    zoomInProgress = true;
 
     const zoomDuration = 1;
     const initialPosition = camera.position.clone();
     let targetPosition;
 
-    // Ajustar el zoom dependiendo del tamaño del planeta (ej. diferencia entre Tierra y Luna)
     if (planet === moon) {
-        targetPosition = planet.position.clone().setLength(Math.max(5, minZoomDistance));  // Zoom más cercano para la Luna
+        targetPosition = planet.position.clone().setLength(Math.max(5, minZoomDistance));
     } else {
-        targetPosition = planet.position.clone().setLength(Math.min(10, maxZoomDistance)); // Zoom para otros planetas
+        targetPosition = planet.position.clone().setLength(Math.min(10, maxZoomDistance));
     }
 
     let zoomProgress = 0;
@@ -309,7 +411,7 @@ function zoomToPlanet(planet) {
         zoomProgress += 0.02;
         if (zoomProgress >= 1) {
             clearInterval(zoomInterval);
-            zoomInProgress = false;  // Terminar el proceso de zoom
+            zoomInProgress = false;
         }
         camera.position.lerpVectors(initialPosition, targetPosition, zoomProgress);
         camera.lookAt(planet.position);
@@ -318,23 +420,23 @@ function zoomToPlanet(planet) {
 
 // Function to reset the zoom
 function resetZoom() {
-    if (zoomInProgress) return;  // Prevenir el reset durante el zoom
+    if (zoomInProgress) return;
     isZoomedIn = false;
     zoomTarget = null;
     orbitControls.target.set(0, 0, 0);
     camera.position.set(0, 50, 100);
     camera.lookAt(0, 0, 0);
-    lastClickedPlanet = null;  // Restablecer el planeta clicado
+    lastClickedPlanet = null;
 }
 
 // Corrección para la velocidad de traslación de los planetas
 const mercuryOrbitRadius = 8;
 let mercuryAngle = 0;
-const mercuryRotationSpeed = 0.01;  // Reducido
+const mercuryRotationSpeed = 0.01;
 
 const venusOrbitRadius = 15;
 let venusAngle = 0;
-const venusRotationSpeed = 0.008;  // Reducido
+const venusRotationSpeed = 0.008;
 
 const earthOrbitRadius = 20;
 let earthAngle = 0;
@@ -346,7 +448,7 @@ const marsRotationSpeed = 0.006;
 
 const jupiterOrbitRadius = 40;
 let jupiterAngle = 0;
-const jupiterRotationSpeed = 0.004;  // Reducido
+const jupiterRotationSpeed = 0.004;
 
 const saturnOrbitRadius = 50;
 let saturnAngle = 0;
@@ -358,13 +460,13 @@ const uranusRotationSpeed = 0.002;
 
 const neptuneOrbitRadius = 70;
 let neptuneAngle = 0;
-const neptuneRotationSpeed = 0.001;  // Muy lento
+const neptuneRotationSpeed = 0.001;
 
 const moonOrbitRadius = 2;
 let moonAngle = 0;
-const moonOrbitSpeed = 0.05;  // La Luna mantiene su velocidad
+const moonOrbitSpeed = 0.05;
 
-const sunRotationSpeed = 0.01;  // Rotación lenta del Sol
+const sunRotationSpeed = 0.01;
 
 // Event listener for the speed control
 document.getElementById('speedRange').addEventListener('input', (event) => {
@@ -375,8 +477,7 @@ document.getElementById('speedRange').addEventListener('input', (event) => {
 function animate() {
     requestAnimationFrame(animate);
 
-    // Update planet orbits
-    mercuryAngle += mercuryRotationSpeed * timeSpeed;  // Velocidad más rápida para Mercurio
+    mercuryAngle += mercuryRotationSpeed * timeSpeed;
     venusAngle += venusRotationSpeed * timeSpeed;
     earthAngle += earthRotationSpeed * timeSpeed;
     marsAngle += marsRotationSpeed * timeSpeed;
@@ -384,9 +485,8 @@ function animate() {
     saturnAngle += saturnRotationSpeed * timeSpeed;
     uranusAngle += uranusRotationSpeed * timeSpeed;
     neptuneAngle += neptuneRotationSpeed * timeSpeed;
-    moonAngle += moonOrbitSpeed * timeSpeed;  // Órbita de la luna
+    moonAngle += moonOrbitSpeed * timeSpeed;
 
-    // Update planet positions
     mercury.position.set(Math.cos(mercuryAngle) * mercuryOrbitRadius, 0, Math.sin(mercuryAngle) * mercuryOrbitRadius);
     venus.position.set(Math.cos(venusAngle) * venusOrbitRadius, 0, Math.sin(venusAngle) * venusOrbitRadius);
     earth.position.set(Math.cos(earthAngle) * earthOrbitRadius, 0, Math.sin(earthAngle) * earthOrbitRadius);
@@ -397,26 +497,23 @@ function animate() {
     uranus.position.set(Math.cos(uranusAngle) * uranusOrbitRadius, 0, Math.sin(uranusAngle) * uranusOrbitRadius);
     neptune.position.set(Math.cos(neptuneAngle) * neptuneOrbitRadius, 0, Math.sin(neptuneAngle) * neptuneOrbitRadius);
 
-    // Update labels to follow planets
     labels.forEach(label => {
         label.sprite.position.set(label.planet.position.x, label.planet.position.y + 6, label.planet.position.z);
     });
 
-    // Update sun's rotation
     sun.rotation.y += sunRotationSpeed;
 
-    // If zoomed in, make camera follow planet
     if (isZoomedIn && zoomTarget) {
-        const followDistance = 10;  // Ajustar la distancia a la que la cámara sigue al planeta
+        const followDistance = 10;
 
         const targetPosition = new THREE.Vector3(
-            zoomTarget.position.x + followDistance, 
-            zoomTarget.position.y + followDistance / 2, 
+            zoomTarget.position.x + followDistance,
+            zoomTarget.position.y + followDistance / 2,
             zoomTarget.position.z + followDistance
         );
 
-        camera.position.lerp(targetPosition, 0.1);  // Lerp para suavizar el movimiento de la cámara
-        camera.lookAt(zoomTarget.position);  // Hacer que la cámara siempre mire hacia el planeta
+        camera.position.lerp(targetPosition, 0.1);
+        camera.lookAt(zoomTarget.position);
     }
 
     renderer.render(scene, camera);
