@@ -259,7 +259,7 @@ const celestialBodiesInfo = {
         life: "No",
         effect: "Your weight would be extremely light.",
         fact: "Eris is one of the most massive dwarf planets."
-    }
+    },
 };
 
 // Función para mostrar la información del planeta seleccionado
@@ -353,15 +353,26 @@ function toggleOrbits() {
 }
 
 // Handle click and touch events
+// Variables para doble click
+let lastClickTime = 0;
+const doubleClickThreshold = 300; // Tiempo en milisegundos para considerar un doble click
+
+// Handle click and touch events
 window.addEventListener('click', onMouseClick, false);
 window.addEventListener('touchstart', onTouchStart, false);
 
 function onMouseClick(event) {
-    if (zoomInProgress) return; 
-    if (event.target.closest('#controls')) {
-        return;  // Prevent interactions on controls
-    }
     event.preventDefault();
+
+    const currentTime = new Date().getTime();
+    const timeDifference = currentTime - lastClickTime;
+    lastClickTime = currentTime;
+
+    if (timeDifference < doubleClickThreshold) {
+        // Si el intervalo entre los clics es muy corto, se considera doble click, evitar salir del planeta.
+        return;
+    }
+
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     handleClickOrTouch();
@@ -369,6 +380,7 @@ function onMouseClick(event) {
 
 function onTouchStart(event) {
     event.preventDefault();
+
     mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
     handleClickOrTouch();
@@ -440,6 +452,12 @@ function resetZoom() {
     document.getElementById('info-container').style.display = 'none';
 }
 
+// Ajuste para móviles: Mantener el seguimiento del planeta cuando se interactúa manualmente
+orbitControls.addEventListener('change', () => {
+    if (isZoomedIn && zoomTarget) {
+        camera.lookAt(zoomTarget.position);
+    }
+});
 // Animations for planet rotations
 const mercuryOrbitRadius = 8;
 let mercuryAngle = 0;
