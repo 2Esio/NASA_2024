@@ -123,15 +123,19 @@ orbits.push(createOrbit(35, 0xaaaaaa)); // Orbit of Ceres
 orbits.push(createOrbit(90, 0xaaaaaa)); // Orbit of Eris
 
 // Handle asteroid belt
+// Handle asteroid belt between Mars and Jupiter
 function createAsteroidBelt() {
     const asteroidGeometry = new THREE.SphereGeometry(0.1, 16, 16);
     const asteroidMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
-    const asteroidCount = 100;
+    const asteroidCount = 300;  // Increased number of asteroids for a denser belt
+    const beltInnerRadius = 35; // Inner radius just outside Mars's orbit (Mars has an orbit radius of 30)
+    const beltOuterRadius = 39; // Outer radius before Jupiter's orbit (Jupiter has an orbit radius of 40)
+
     for (let i = 0; i < asteroidCount; i++) {
         const asteroid = new THREE.Mesh(asteroidGeometry, asteroidMaterial);
         const angle = Math.random() * Math.PI * 2;
-        const radius = 40 + Math.random() * 5;
-        asteroid.position.set(Math.cos(angle) * radius, Math.random() * 5 - 2.5, Math.sin(angle) * radius);
+        const radius = beltInnerRadius + Math.random() * (beltOuterRadius - beltInnerRadius);
+        asteroid.position.set(Math.cos(angle) * radius, Math.random() * 2 - 1, Math.sin(angle) * radius);
         scene.add(asteroid);
     }
 }
