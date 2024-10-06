@@ -8,6 +8,7 @@ canvas {
     display: block;
 }
 
+/* Controles del Orrery */
 #controls {
     position: absolute;
     top: 10px;
@@ -46,6 +47,7 @@ label {
     font-size: 14px;
 }
 
+/* Instrucciones */
 #instructions {
     margin-top: 15px;
     color: white;
@@ -102,24 +104,53 @@ label {
     border: 1px solid #ffffff55;
     z-index: 100;
     color: white;
-    overflow-y: auto; /* Permitir desplazamiento vertical */
-    max-height: 60vh; /* Limitar el tamaño para dispositivos móviles */
+    overflow-y: auto;
+    max-height: 60vh;
 }
 
 @media screen and (max-width: 600px) {
     #info-container {
-        width: 90%; /* Ajustar el ancho para dispositivos móviles */
+        width: 90%;
         right: 5px;
         top: 100px;
-        max-height: 50vh; /* Ajustar el alto para dispositivos móviles */
+        max-height: 50vh;
     }
 }
 
 /* Ajustes para modo horizontal en dispositivos móviles */
 @media screen and (max-width: 600px) and (orientation: landscape) {
     #info-container {
-        top: 50px; /* Elevar el contenedor cuando la pantalla esté en modo horizontal */
-        max-height: 40vh; /* Reducir un poco más el alto para adaptarse a la pantalla horizontal */
+        top: 50px;
+        max-height: 40vh;
     }
 }
 
+/* Estilo para el botón de regreso al home */
+#back-to-home {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.btn-back {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #2980b9;
+    color: white;
+    text-transform: uppercase;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.btn-back:hover {
+    background-color: #3498db;
+}
+
+/* Adaptación del botón para pantallas pequeñas */
+@media screen and (max-width: 600px) {
+    .btn-back {
+        font-size: 12px;
+        padding: 8px 15px;
+    }
+}
