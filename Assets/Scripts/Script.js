@@ -278,26 +278,34 @@ function handleClickOrTouch() {
 // Function to zoom into a planet
 function zoomToPlanet(planet) {
     if (zoomInProgress || lastClickedPlanet === planet) {
-        return;
+        return;  // Prevent multiple clicks or quick clicks
     }
     isZoomedIn = true;
     zoomTarget = planet;
     orbitControls.enabled = true;
     orbitControls.target.copy(planet.position);
     orbitControls.update();
-    lastClickedPlanet = planet;
-    zoomInProgress = true;
+
+    lastClickedPlanet = planet;  // Store the last clicked planet
+    zoomInProgress = true;  // Indicate that a zoom is in progress
 
     const zoomDuration = 1;
     const initialPosition = camera.position.clone();
-    const targetPosition = planet.position.clone().setLength(Math.min(10, maxZoomDistance));
-    let zoomProgress = 0;
+    let targetPosition;
 
+    // Adjust zoom based on the size of the planet (e.g., difference between Earth and Moon)
+    if (planet === moon) {
+        targetPosition = planet.position.clone().setLength(Math.max(5, minZoomDistance));  // Closer zoom for the Moon
+    } else {
+        targetPosition = planet.position.clone().setLength(Math.min(10, maxZoomDistance)); // Zoom for other planets
+    }
+
+    let zoomProgress = 0;
     const zoomInterval = setInterval(() => {
         zoomProgress += 0.02;
         if (zoomProgress >= 1) {
             clearInterval(zoomInterval);
-            zoomInProgress = false;
+            zoomInProgress = false;  // Finish zoom process
         }
         camera.position.lerpVectors(initialPosition, targetPosition, zoomProgress);
         camera.lookAt(planet.position);
@@ -319,7 +327,6 @@ function resetZoom() {
 }
 
 // Animations for planet rotations
-const sunRotationSpeed = 0.01;  // Velocidad de rotación del sol
 const mercuryOrbitRadius = 8;
 let mercuryAngle = 0;
 const mercuryRotationSpeed = 0.01;
@@ -336,39 +343,85 @@ const marsOrbitRadius = 30;
 let marsAngle = 0;
 const marsRotationSpeed = 0.006;
 
+const jupiterOrbitRadius = 40;
+let jupiterAngle = 0;
+const jupiterRotationSpeed = 0.004;
+
+const saturnOrbitRadius = 50;
+let saturnAngle = 0;
+const saturnRotationSpeed = 0.003;
+
+const uranusOrbitRadius = 60;
+let uranusAngle = 0;
+const uranusRotationSpeed = 0.002;
+
+const neptuneOrbitRadius = 70;
+let neptuneAngle = 0;
+const neptuneRotationSpeed = 0.001;
+
 const moonOrbitRadius = 2;
 let moonAngle = 0;
 const moonOrbitSpeed = 0.05;
 
+const sunRotationSpeed = 0.01;  // Slow rotation of the Sun
+
+let plutoAngle = 0;
+const plutoRotationSpeed = 0.0008;
+const plutoOrbitRadius = 80;
+
+let ceresAngle = 0;
+const ceresRotationSpeed = 0.0015;
+const ceresOrbitRadius = 35;
+
+let erisAngle = 0;
+const erisRotationSpeed = 0.0006;
+const erisOrbitRadius = 90;
+
+
 // Event listener for speed control
 document.getElementById('speedRange').addEventListener('input', (event) => {
     timeSpeed = parseFloat(event.target.value);
-
-    if (isZoomedIn && zoomTarget && !isManualControl) {
-        camera.lookAt(zoomTarget.position);
-    }
 });
 
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
 
-    // Update planet orbits and rotations
+    // Update planet orbits
     mercuryAngle += mercuryRotationSpeed * timeSpeed;
     venusAngle += venusRotationSpeed * timeSpeed;
     earthAngle += earthRotationSpeed * timeSpeed;
     marsAngle += marsRotationSpeed * timeSpeed;
+    jupiterAngle += jupiterRotationSpeed * timeSpeed;
+    saturnAngle += saturnRotationSpeed * timeSpeed;
+    uranusAngle += uranusRotationSpeed * timeSpeed;
+    neptuneAngle += neptuneRotationSpeed * timeSpeed;
     moonAngle += moonOrbitSpeed * timeSpeed;
+    plutoAngle += plutoRotationSpeed * timeSpeed;
+    ceresAngle += ceresRotationSpeed * timeSpeed;
+    erisAngle += erisRotationSpeed * timeSpeed;
 
-    // Rotación del Sol
-    sun.rotation.y += sunRotationSpeed * timeSpeed;
-
-    // Set positions based on angle
+    // Update planet positions
     mercury.position.set(Math.cos(mercuryAngle) * mercuryOrbitRadius, 0, Math.sin(mercuryAngle) * mercuryOrbitRadius);
     venus.position.set(Math.cos(venusAngle) * venusOrbitRadius, 0, Math.sin(venusAngle) * venusOrbitRadius);
     earth.position.set(Math.cos(earthAngle) * earthOrbitRadius, 0, Math.sin(earthAngle) * earthOrbitRadius);
+    mars.position.set(Math.cos(marsAngle) * marsOrbitRadius, 0, Math.sin(marsAngle) * marsOrbitRadius);
     moon.position.set(earth.position.x + Math.cos(moonAngle) * moonOrbitRadius, 0, earth.position.z + Math.sin(moonAngle) * moonOrbitRadius);
+    jupiter.position.set(Math.cos(jupiterAngle) * jupiterOrbitRadius, 0, Math.sin(jupiterAngle) * jupiterOrbitRadius);
+    saturn.position.set(Math.cos(saturnAngle) * saturnOrbitRadius, 0, Math.sin(saturnAngle) * saturnOrbitRadius);
+    uranus.position.set(Math.cos(uranusAngle) * uranusOrbitRadius, 0, Math.sin(uranusAngle) * uranusOrbitRadius);
+    neptune.position.set(Math.cos(neptuneAngle) * neptuneOrbitRadius, 0, Math.sin(neptuneAngle) * neptuneOrbitRadius);
+    pluto.position.set(Math.cos(plutoAngle) * plutoOrbitRadius, 0, Math.sin(plutoAngle) * plutoOrbitRadius);
+    ceres.position.set(Math.cos(ceresAngle) * ceresOrbitRadius, 0, Math.sin(ceresAngle) * ceresOrbitRadius);
+    eris.position.set(Math.cos(erisAngle) * erisOrbitRadius, 0, Math.sin(erisAngle) * erisOrbitRadius);
 
+    // Update labels to follow planets
+    labels.forEach(label => {
+        label.sprite.position.set(label.planet.position.x, label.planet.position.y + 6, label.planet.position.z);
+    });
+
+    // Update Sun's rotation
+    sun.rotation.y += sunRotationSpeed;
     // Si está con zoom, hacer que la cámara siga al planeta
     if (isZoomedIn && zoomTarget && !isManualControl) {
         const followDistance = 10;
