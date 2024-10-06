@@ -90,6 +90,7 @@ label {
     }
 }
 
+/* Estilos generales del contenedor de información */
 #info-container {
     position: absolute;
     top: 120px;
@@ -111,6 +112,14 @@ label {
         right: 5px;
         top: 100px;
         max-height: 50vh; /* Ajustar el alto para dispositivos móviles */
+    }
+}
+
+/* Ajustes para modo horizontal en dispositivos móviles */
+@media screen and (max-width: 600px) and (orientation: landscape) {
+    #info-container {
+        top: 50px; /* Elevar el contenedor cuando la pantalla esté en modo horizontal */
+        max-height: 40vh; /* Reducir un poco más el alto para adaptarse a la pantalla horizontal */
     }
 }
 
