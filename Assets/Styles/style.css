@@ -90,3 +90,25 @@ label {
         font-size: 11px; /* Reducir el tamaño del texto en pantallas pequeñas */
     }
 }
+
+/* Estilos para el contenedor de información */
+#info-container {
+    position: absolute;
+    top: 100px;
+    right: 20px;
+    width: 300px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    display: none; /* Se mostrará al seleccionar un planeta */
+}
+
+#info-container h2 {
+    text-align: center;
+}
+
+#info-container input, #info-container button {
+    width: 100%;
+    margin: 5px 0;
+}

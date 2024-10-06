@@ -301,6 +301,83 @@ function onDoubleClick(event) {
     // Prevenir el doble clic si ya está haciendo zoom o el zoom ha sido completado
     if (zoomInProgress || !zoomTarget) return;
 }
+// Información de cada planeta o luna
+const celestialBodiesInfo = {
+    earth: {
+        name: "Tierra",
+        gravity: 9.81,
+        atmosphere: "Nitrógeno y Oxígeno",
+        type: "Rocoso",
+        discoverer: "Desconocido",
+        life: "Sí",
+        effect: "Tu cuerpo funcionaría normalmente.",
+        fact: "La Tierra es el único planeta conocido que alberga vida.",
+    },
+    jupiter: {
+        name: "Júpiter",
+        gravity: 24.79,
+        atmosphere: "Hidrógeno y Helio",
+        type: "Gaseoso",
+        discoverer: "Galileo Galilei",
+        life: "No",
+        effect: "Tu peso se multiplicaría más de dos veces.",
+        fact: "Júpiter es tan grande que podrías meter más de 1.300 Tierras dentro de él.",
+    },
+    // Agrega aquí información para otros planetas y lunas
+};
+
+// Función para mostrar la información al hacer clic en un planeta
+function showPlanetInfo(planetName) {
+    const info = celestialBodiesInfo[planetName];
+
+    if (info) {
+        document.getElementById('planet-name').textContent = info.name;
+        document.getElementById('planet-gravity').textContent = info.gravity;
+        document.getElementById('planet-atmosphere').textContent = info.atmosphere;
+        document.getElementById('planet-type').textContent = info.type;
+        document.getElementById('planet-discoverer').textContent = info.discoverer;
+        document.getElementById('planet-life').textContent = info.life;
+        document.getElementById('planet-effect').textContent = info.effect;
+        document.getElementById('planet-fact').textContent = info.fact;
+        document.getElementById('info-container').style.display = 'block';
+    }
+}
+
+// Función para calcular el peso en el planeta
+function calculateWeight() {
+    const weightOnEarth = parseFloat(document.getElementById('weight-input').value);
+    const gravity = parseFloat(document.getElementById('planet-gravity').textContent);
+    const earthGravity = 9.81; // Gravedad de la Tierra
+
+    if (!isNaN(weightOnEarth)) {
+        const weightOnPlanet = (weightOnEarth / earthGravity) * gravity;
+        document.getElementById('planet-weight-result').textContent = weightOnPlanet.toFixed(2);
+    } else {
+        alert("Por favor, introduce un peso válido.");
+    }
+}
+
+// Evento de clic en el planeta para mostrar su información
+function onMouseClick(event) {
+    if (zoomInProgress) return;  // Prevenir clics durante el zoom
+    if (event.target.closest('#controls')) {
+        return;  // Prevenir interacciones en los controles
+    }
+
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(planets);
+
+    if (intersects.length > 0) {
+        const selectedPlanet = intersects[0].object.name.toLowerCase(); // Obtener el nombre del planeta seleccionado
+        showPlanetInfo(selectedPlanet); // Mostrar la información
+        zoomToPlanet(intersects[0].object); // Hacer zoom en el planeta
+    } else if (isZoomedIn) {
+        resetZoom();
+    }
+}
 
 // Raycasting to detect clicks or touches on planets or moon
 window.addEventListener('click', onMouseClick, false);
@@ -342,12 +419,16 @@ function animate() {
 
     // If zoomed in, make camera follow planet
     if (isZoomedIn && zoomTarget) {
-        camera.position.set(
-            Math.max(zoomTarget.position.x + 10, minZoomDistance), 
-            Math.max(zoomTarget.position.y + 5, minZoomDistance),  
-            Math.max(zoomTarget.position.z + 10, minZoomDistance)  
+        const followDistance = 10;  // Ajustar la distancia a la que la cámara sigue al planeta
+
+        const targetPosition = new THREE.Vector3(
+            zoomTarget.position.x + followDistance, 
+            zoomTarget.position.y + followDistance / 2, 
+            zoomTarget.position.z + followDistance
         );
-        camera.lookAt(zoomTarget.position);
+
+        camera.position.lerp(targetPosition, 0.1);  // Lerp para suavizar el movimiento de la cámara
+        camera.lookAt(zoomTarget.position);  // Hacer que la cámara siempre mire hacia el planeta
     }
 
     renderer.render(scene, camera);
