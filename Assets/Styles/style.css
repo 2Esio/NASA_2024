@@ -154,3 +154,20 @@ label {
         padding: 8px 15px;
     }
 }
+/* Adjustments for mobile screen size */
+@media screen and (max-width: 600px) {
+    #info-container {
+        width: 90%;
+        right: 5px;
+        top: 50px; /* Adjusted from 100px to 50px to move it higher */
+        max-height: 50vh;
+    }
+}
+
+/* Further adjustments for landscape mode */
+@media screen and (max-width: 600px) and (orientation: landscape) {
+    #info-container {
+        top: 30px; /* Moved higher for landscape mode as well */
+        max-height: 40vh;
+    }
+}
