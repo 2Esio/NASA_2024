@@ -299,6 +299,18 @@ let labelsVisible = true;
 let orbitsVisible = true;
 let timeSpeed = 1;
 
+// Detener la propagación de eventos de desplazamiento en el contenedor de información
+const infoContainer = document.getElementById('info-container');
+
+infoContainer.addEventListener('wheel', (event) => {
+    event.stopPropagation();  // Detiene que el scroll del contenedor afecte el orbitControls
+});
+
+infoContainer.addEventListener('touchmove', (event) => {
+    event.stopPropagation();  // Evita que el toque al desplazarse afecte el orbitControls
+}, { passive: true });
+
+
 // Raycaster for detecting clicks on planets
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();

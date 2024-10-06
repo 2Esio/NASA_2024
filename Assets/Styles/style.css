@@ -95,21 +95,22 @@ label {
     top: 120px;
     right: 10px;
     width: 250px;
-    background: rgba(0, 0, 0, 0.7); /* Maintain contrast */
+    background: rgba(0, 0, 0, 0.7);
     padding: 15px;
     border-radius: 8px;
     border: 1px solid #ffffff55;
     z-index: 100;
     color: white;
-    overflow-y: auto; /* Ensure the container can scroll if content overflows */
-    max-height: 60vh; /* Set a maximum height so it doesn't overflow off the screen */
+    overflow-y: auto; /* Permitir desplazamiento vertical */
+    max-height: 60vh; /* Limitar el tamaño para dispositivos móviles */
 }
 
 @media screen and (max-width: 600px) {
     #info-container {
-        width: 90%; /* Take up more space on smaller screens */
-        right: 5px; /* Adjust position */
-        top: 100px; /* Adjust top spacing */
-        max-height: 50vh; /* Adjust max height for mobile */
+        width: 90%; /* Ajustar el ancho para dispositivos móviles */
+        right: 5px;
+        top: 100px;
+        max-height: 50vh; /* Ajustar el alto para dispositivos móviles */
     }
 }
+
