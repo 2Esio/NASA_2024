@@ -280,3 +280,46 @@
       right: 5px; /* Ajustar más la posición */
   }
 }
+
+#what-if {
+  padding: var(--section-padding) 0;
+  background-color: var(--gunmetal);
+  color: var(--white);
+  text-align: center;
+}
+
+.planet-section {
+  margin-bottom: 40px;
+}
+
+.planet-section h3 {
+  font-size: var(--fs-3);
+  margin-bottom: 15px;
+}
+
+.planet-section p {
+  font-size: var(--fs-5);
+  margin-bottom: 10px;
+}
+
+.planet-image {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  margin-top: 20px;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .planet-section h3 {
+    font-size: var(--fs-4);
+  }
+
+  .planet-section p {
+    font-size: var(--fs-6);
+  }
+
+  .planet-image {
+    max-width: 100%;
+  }
+}
