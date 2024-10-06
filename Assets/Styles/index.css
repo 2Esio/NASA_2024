@@ -256,4 +256,12 @@
     text-align: center;
     padding: 20px 0;
   }
-  
+  @media (max-width: 768px) {
+    .btn-primary {
+        font-size: 1rem;
+        padding: 10px 20px;
+        width: 100%; /* Hacer que el botón ocupe todo el ancho disponible */
+        max-width: 300px; /* Limitar el ancho máximo */
+        margin: 0 auto; /* Centrar el botón */
+    }
+}
