@@ -252,16 +252,31 @@
     color: var(--white);
   }
   
-  .footer-bottom {
-    text-align: center;
-    padding: 20px 0;
+ /* Botón superior */
+.orreryButton {
+  background-color: var(--bright-navy-blue);
+  color: var(--white);
+  padding: 15px 30px;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  text-align: center;
+  display: inline-block;
+  margin: 0 auto;
+  position: absolute; /* Hacer el botón flotante */
+  top: 20px; /* Ajustar la altura para que no quede tan arriba */
+  right: 10px; /* Margen desde la derecha */
+  z-index: 1000;
+  max-width: 90%; /* Evitar que el botón sea demasiado ancho */
+  overflow: hidden; /* Ocultar cualquier desbordamiento de texto */
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+  #orreryButton {
+      font-size: 1rem;
+      padding: 10px 20px;
+      width: 80%;
+      max-width: 200px;
+      right: 5px; /* Ajustar más la posición */
   }
-  @media (max-width: 768px) {
-    .btn-primary {
-        font-size: 1rem;
-        padding: 10px 20px;
-        width: 100%; /* Hacer que el botón ocupe todo el ancho disponible */
-        max-width: 300px; /* Limitar el ancho máximo */
-        margin: 0 auto; /* Centrar el botón */
-    }
 }
