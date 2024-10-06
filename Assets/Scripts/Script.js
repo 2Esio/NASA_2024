@@ -404,6 +404,118 @@ function onMouseClick(event) {
     handleClickOrTouch();
 }
 
+// Extraer datos de cometas y asteroides desde la API
+async function fetchComets() {
+    try {
+        const response = await fetch('https://data.nasa.gov/resource/b67r-rgxc.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const cometsData = await response.json();
+        console.log('Comets Data:', cometsData); // Verificar si los datos llegan aquí
+        processCometsData(cometsData);
+    } catch (error) {
+        console.error('Error fetching comets data:', error); // Mostrar el error en la consola
+    }
+}
+// Llamar a la función al cargar la escena
+function processCometsData(cometsData) {
+    cometsData.forEach(comet => {
+        if (comet.object.startsWith('C/') || comet.object.startsWith('P/')) {
+            console.log('Processing comet:', comet.object);
+            const size = comet.size || 0.7;
+            const semiMajorAxis = comet.semi_major_axis || Math.random() * 50 + 30; // Semieje mayor
+            const eccentricity = comet.e || 0.5; // Excentricidad
+            const translationSpeed = comet.orbital_period || 0.005;
+
+            // Crear el cuerpo del cometa
+            const cometTexture = loader.load('Assets/Images/moon.jpg');
+            const cometBody = createCelestialBody(size, cometTexture, comet.object);
+
+            // Crear la órbita del cometa
+            const cometOrbit = createOrbit(semiMajorAxis, 0xffffff); // Órbita en blanco para los cometas
+            scene.add(cometOrbit);
+
+            // Añadir cometa y órbita a sus respectivos arrays
+            comets.push(cometBody);
+            cometOrbits.push(cometOrbit);
+
+            // Obtener los puntos de la geometría de la órbita
+            const points = cometOrbit.geometry.attributes.position.array; 
+            const numPoints = points.length / 3;  // Cada punto tiene 3 coordenadas (x, y, z)
+            let cometAngle = 0; // Ángulo para determinar la posición en la órbita
+
+            // Función para actualizar la posición del cometa
+            function updateCometPosition() {
+                cometAngle += translationSpeed * timeSpeed; // Incrementar el ángulo con la velocidad ajustada
+
+                // Normalizar el ángulo para asegurarse de que esté dentro del rango de puntos
+                const pointIndex = Math.floor((cometAngle % numPoints) * 3); // Obtener el índice correcto en la órbita
+
+                // Obtener las coordenadas del punto actual en la órbita
+                const x = points[pointIndex];
+                const y = points[pointIndex + 1];
+                const z = points[pointIndex + 2];
+
+                // Actualizar la posición del cometa a la nueva posición en la órbita
+                cometBody.position.set(x, y, z);
+            }
+
+            // Añadir la función de actualización de la posición del cometa a la animación
+            animateCometFunctions.push(updateCometPosition);
+        }
+    });
+}
+
+
+// Step 3: Call the fetch function to load comets data when the scene is initialized
+fetchComets();
+
+function createAsteroidsAndOrbits(data) {
+    data.forEach(asteroid => {
+        // Validar si el semi_major_axis está disponible, de lo contrario asignar un valor por defecto
+        const orbitRadius = parseFloat(asteroid.semi_major_axis) || 1;
+
+        // Crear la geometría y material del asteroide
+        const asteroidSize = Math.random() * 0.3 + 0.1; // Tamaño aleatorio para representar asteroides
+        const asteroidTexture = new THREE.MeshBasicMaterial({ color: 0xaaaaaa }); // Color gris para asteroides
+        const asteroidGeometry = new THREE.SphereGeometry(asteroidSize, 16, 16);
+        const asteroidMesh = new THREE.Mesh(asteroidGeometry, asteroidTexture);
+
+        // Colocar el asteroide en una órbita circular alrededor del centro de la escena (en 2D: y=0)
+        asteroidMesh.position.set(Math.cos(Math.random() * 2 * Math.PI) * orbitRadius, 0, Math.sin(Math.random() * 2 * Math.PI) * orbitRadius);
+        scene.add(asteroidMesh);
+
+        // Crear la órbita visual para el asteroide
+        const orbit = createOrbit(orbitRadius, 0xff0000); // Órbitas en rojo para los asteroides
+        asteroidOrbits.push(orbit); // Guardar en el array separado de órbitas de asteroides
+        asteroids.push(asteroidMesh);  // Guardar el asteroide
+    });
+}
+
+let asteroidsVisible = true;  // Variable global para el control de visibilidad
+let asteroids = [];  // Lista de asteroides
+let asteroidOrbits = [];  // Lista de órbitas de asteroides
+let comets = [];  // Lista de cometas
+let cometOrbits = [];  // Lista de órbitas de cometas
+
+// Función para alternar la visibilidad de los asteroides y los cometas, excluyendo planetas
+function toggleAsteroidsAndComets() {
+    asteroidsVisible = !asteroidsVisible;  // Cambiar el estado de visibilidad
+
+    // Alternar visibilidad de los asteroides
+    asteroids.forEach(asteroid => asteroid.visible = asteroidsVisible);
+    
+    // Alternar visibilidad de las órbitas de los asteroides
+    asteroidOrbits.forEach(orbit => orbit.visible = asteroidsVisible);
+
+    // Alternar visibilidad de los cometas
+    comets.forEach(comet => comet.visible = asteroidsVisible);
+    
+    // Alternar visibilidad de las órbitas de los cometas
+    cometOrbits.forEach(orbit => orbit.visible = asteroidsVisible);
+}
+
 function onTouchStart(event) {
     event.preventDefault();
 
@@ -535,11 +647,29 @@ let erisAngle = 0;
 const erisRotationSpeed = 0.0006;
 const erisOrbitRadius = 90;
 
+let animateCometFunctions = [];  // Declarar el array para almacenar las funciones de animación de cometas
+
 
 // Event listener for speed control
 document.getElementById('speedRange').addEventListener('input', (event) => {
     timeSpeed = parseFloat(event.target.value);
 });
+
+let asteroidAngle = 0;
+const asteroidRotationSpeed = 0.001;  // Velocidad de rotación para los asteroides
+function updateAsteroids() {
+    asteroidAngle += asteroidRotationSpeed * timeSpeed;
+
+    asteroids.forEach((asteroid, index) => {
+        const orbitRadius = asteroidOrbits[index].geometry.attributes.position.array[0]; // Obtener el radio de la órbita
+        const x = Math.cos(asteroidAngle + index) * orbitRadius;
+        const z = Math.sin(asteroidAngle + index) * orbitRadius;
+        
+        // Mantener y = 0 para forzar que todos los asteroides permanezcan en el plano horizontal
+        asteroid.position.set(x, 0, z);
+    });
+}
+
 
 // Animation loop
 function animate() {
@@ -580,6 +710,9 @@ function animate() {
 
     // Update Sun's rotation
     sun.rotation.y += sunRotationSpeed;
+
+    animateCometFunctions.forEach(updateFunction => updateFunction());
+    updateAsteroids();
     // Si está con zoom, hacer que la cámara siga al planeta
     if (isZoomedIn && zoomTarget && !isManualControl) {
         const followDistance = 10;
