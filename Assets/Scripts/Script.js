@@ -11,6 +11,7 @@ let isZoomedIn = false;
 let zoomTarget = null;
 let lastClickedPlanet = null;
 let zoomInProgress = false;
+let isManualControl = false; // Control para detectar interacción manual
 const minZoomDistance = 5;
 const maxZoomDistance = 100;
 
@@ -32,6 +33,14 @@ orbitControls.touchPan = true;
 orbitControls.touchRotate = true;
 orbitControls.minDistance = minZoomDistance;
 orbitControls.maxDistance = maxZoomDistance;
+
+// Detecta cuando el usuario toma control manual de la cámara
+orbitControls.addEventListener('start', () => {
+    isManualControl = true; // Se está moviendo la cámara manualmente
+});
+orbitControls.addEventListener('end', () => {
+    isManualControl = false; // Se ha terminado el control manual
+});
 
 // Load celestial bodies textures
 const sunTexture = loader.load('Assets/Images/sun.jpg');
@@ -151,43 +160,13 @@ const celestialBodiesInfo = {
         effect: "Your weight would be much lighter.",
         fact: "Mercury is the closest planet to the Sun but not the hottest."
     },
-    venus: {
-        name: "Venus",
-        gravity: "8.87",
-        atmosphere: "Carbon Dioxide",
-        type: "Rocky",
-        discoverer: "Unknown",
-        life: "No",
-        effect: "Your body would experience crushing pressure.",
-        fact: "Venus has temperatures over 450°C."
-    },
-    earth: {
-        name: "Earth",
-        gravity: "9.81",
-        atmosphere: "Nitrogen and Oxygen",
-        type: "Rocky",
-        discoverer: "Unknown",
-        life: "Yes",
-        effect: "Your body would function normally.",
-        fact: "Earth is the only known planet to harbor life."
-    },
-    mars: {
-        name: "Mars",
-        gravity: "3.71",
-        atmosphere: "Carbon Dioxide",
-        type: "Rocky",
-        discoverer: "Galileo Galilei",
-        life: "No",
-        effect: "Your weight would be much lighter.",
-        fact: "Mars is home to the tallest mountain in the solar system."
-    },
-    // Agrega información de los demás planetas aquí...
+    // Agrega información para los demás planetas aquí...
 };
 
 // Función para mostrar la información del planeta seleccionado
 function showPlanetInfo(planetName) {
-    console.log("Showing information for: ", planetName);
-    const info = celestialBodiesInfo[planetName.toLowerCase()];  // Corrige toLowerCase()
+    console.log("Showing information for: ",planetName);
+    const info = celestialBodiesInfo[planetName.toLowerCase()];
 
     if (info) {
         document.getElementById('planet-name').textContent = info.name;
@@ -337,37 +316,33 @@ function resetZoom() {
     lastClickedPlanet = null;
 }
 
-// Animations for the planet rotations, sun rotation, and moon orbit
+// Animations for planet rotations
+const sunRotationSpeed = 0.01;  // Velocidad de rotación del sol
 const mercuryOrbitRadius = 8;
 let mercuryAngle = 0;
 const mercuryRotationSpeed = 0.01;
+
 const venusOrbitRadius = 15;
 let venusAngle = 0;
 const venusRotationSpeed = 0.008;
+
 const earthOrbitRadius = 20;
 let earthAngle = 0;
 const earthRotationSpeed = 0.007;
+
 const marsOrbitRadius = 30;
 let marsAngle = 0;
 const marsRotationSpeed = 0.006;
+
 const moonOrbitRadius = 2;
 let moonAngle = 0;
 const moonOrbitSpeed = 0.05;
-const sunRotationSpeed = 0.01; // Rotación del sol
 
 // Event listener for speed control
 document.getElementById('speedRange').addEventListener('input', (event) => {
     timeSpeed = parseFloat(event.target.value);
 
-    // Mantén el enfoque si estás en un planeta
-    if (isZoomedIn && zoomTarget) {
-        const followDistance = 10;
-        const targetPosition = new THREE.Vector3(
-            zoomTarget.position.x + followDistance,
-            zoomTarget.position.y + followDistance / 2,
-            zoomTarget.position.z + followDistance
-        );
-        camera.position.lerp(targetPosition, 0.1);
+    if (isZoomedIn && zoomTarget && !isManualControl) {
         camera.lookAt(zoomTarget.position);
     }
 });
@@ -393,7 +368,7 @@ function animate() {
     moon.position.set(earth.position.x + Math.cos(moonAngle) * moonOrbitRadius, 0, earth.position.z + Math.sin(moonAngle) * moonOrbitRadius);
 
     // Si está con zoom, hacer que la cámara siga al planeta
-    if (isZoomedIn && zoomTarget) {
+    if (isZoomedIn && zoomTarget && !isManualControl) {
         const followDistance = 10;
         const targetPosition = new THREE.Vector3(
             zoomTarget.position.x + followDistance,
