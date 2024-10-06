@@ -27,12 +27,13 @@ orbitControls.enableDamping = true; // Add smooth damping to zoom/pan/rotate
 orbitControls.dampingFactor = 0.1;
 orbitControls.enableZoom = true; // Enable zoom by default for planet view
 
-// Add touch controls for mobile devices
+// Ajustes para mejorar el control en dispositivos móviles
+orbitControls.enablePan = true;
+orbitControls.enableRotate = true;
+orbitControls.enableZoom = true;
 orbitControls.touchPan = true;
 orbitControls.touchRotate = true;
-orbitControls.enableDamping = true; // Enable damping for mobile smoothness
-orbitControls.dampingFactor = 0.15;
-
+orbitControls.dampingFactor = 0.2;
 // Define zoom limits in the camera controls
 orbitControls.minDistance = minZoomDistance; // Minimum distance for manual zoom
 orbitControls.maxDistance = maxZoomDistance; // Maximum distance for manual zoom
@@ -49,6 +50,10 @@ const saturnTexture = loader.load('Assets/Images/saturn.jpg');
 const saturnRingTexture = loader.load('Assets/Images/rings.png');  // Texture for Saturn's rings
 const uranusTexture = loader.load('Assets/Images/uranus.jpg');
 const neptuneTexture = loader.load('Assets/Images/neptune.jpg');
+// Cuerpos adicionales: Plutón, Ceres y Eris
+const plutoTexture = loader.load('Assets/Images/pluto.jpg');
+const ceresTexture = loader.load('Assets/Images/ceres.jpg');
+const erisTexture = loader.load('Assets/Images/eris.jpg');
 
 // Create celestial bodies
 const planets = [];
@@ -62,6 +67,9 @@ const jupiter = createCelestialBody(2, jupiterTexture, 'jupiter');
 const saturn = createCelestialBody(1.8, saturnTexture, 'saturn');
 const uranus = createCelestialBody(1.2, uranusTexture, 'uranus');
 const neptune = createCelestialBody(1.3, neptuneTexture, 'neptune');
+const pluto = createCelestialBody(0.18, plutoTexture, 'pluto');
+const ceres = createCelestialBody(0.15, ceresTexture, 'ceres');
+const eris = createCelestialBody(0.2, erisTexture, 'eris');
 
 // Add Saturn's rings
 function createSaturnRings() {
@@ -80,6 +88,7 @@ function createSaturnRings() {
 createSaturnRings();
 
 planets.push(sun, mercury, venus, earth, moon, mars, jupiter, saturn, uranus, neptune);
+planets.push(pluto, ceres, eris);
 
 // Add labels
 const labels = [];
@@ -94,6 +103,10 @@ labels.push(createLabel('Saturn', saturn));
 labels.push(createLabel('Uranus', uranus));
 labels.push(createLabel('Neptune', neptune));
 
+labels.push(createLabel('Pluto', pluto));
+labels.push(createLabel('Ceres', ceres));
+labels.push(createLabel('Eris', eris));
+
 // Add orbits
 const orbits = [];
 orbits.push(createOrbit(8, 0xaaaaaa));
@@ -105,6 +118,9 @@ orbits.push(createOrbit(40, 0xffa500));
 orbits.push(createOrbit(50, 0xffff00));
 orbits.push(createOrbit(60, 0x00ffff));
 orbits.push(createOrbit(70, 0x0000ff));
+orbits.push(createOrbit(80, 0xaaaaaa)); // Órbita de Plutón
+orbits.push(createOrbit(35, 0xaaaaaa)); // Órbita de Ceres
+orbits.push(createOrbit(90, 0xaaaaaa)); // Órbita de Eris
 
 // Cinturón de asteroides
 function createAsteroidBelt() {
@@ -461,6 +477,19 @@ const moonOrbitSpeed = 0.05;
 
 const sunRotationSpeed = 0.01;  // Slow rotation of the Sun
 
+let plutoAngle = 0;
+const plutoRotationSpeed = 0.0008;
+const plutoOrbitRadius = 80;
+
+let ceresAngle = 0;
+const ceresRotationSpeed = 0.0015;
+const ceresOrbitRadius = 35;
+
+let erisAngle = 0;
+const erisRotationSpeed = 0.0006;
+const erisOrbitRadius = 90;
+
+
 // Event listener for the speed control
 document.getElementById('speedRange').addEventListener('input', (event) => {
     timeSpeed = parseFloat(event.target.value);
@@ -480,6 +509,9 @@ function animate() {
     uranusAngle += uranusRotationSpeed * timeSpeed;
     neptuneAngle += neptuneRotationSpeed * timeSpeed;
     moonAngle += moonOrbitSpeed * timeSpeed;
+    plutoAngle += plutoRotationSpeed * timeSpeed;
+    ceresAngle += ceresRotationSpeed * timeSpeed;
+    erisAngle += erisRotationSpeed * timeSpeed;
 
     // Update planet positions
     mercury.position.set(Math.cos(mercuryAngle) * mercuryOrbitRadius, 0, Math.sin(mercuryAngle) * mercuryOrbitRadius);
@@ -491,6 +523,10 @@ function animate() {
     saturn.position.set(Math.cos(saturnAngle) * saturnOrbitRadius, 0, Math.sin(saturnAngle) * saturnOrbitRadius);
     uranus.position.set(Math.cos(uranusAngle) * uranusOrbitRadius, 0, Math.sin(uranusAngle) * uranusOrbitRadius);
     neptune.position.set(Math.cos(neptuneAngle) * neptuneOrbitRadius, 0, Math.sin(neptuneAngle) * neptuneOrbitRadius);
+    pluto.position.set(Math.cos(plutoAngle) * plutoOrbitRadius, 0, Math.sin(plutoAngle) * plutoOrbitRadius);
+    ceres.position.set(Math.cos(ceresAngle) * ceresOrbitRadius, 0, Math.sin(ceresAngle) * ceresOrbitRadius);
+    eris.position.set(Math.cos(erisAngle) * erisOrbitRadius, 0, Math.sin(erisAngle) * erisOrbitRadius);
+
 
     // Update labels to follow planets
     labels.forEach(label => {
