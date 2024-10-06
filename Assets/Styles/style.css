@@ -19,10 +19,10 @@ canvas {
     background: rgba(0, 0, 0, 0.5);
     border-radius: 8px;
     border: 1px solid #ffffff55;
-    width: 250px; /* Ancho reducido */
+    width: 250px;
     max-width: 100%;
-    max-height: 80vh; /* Limitar la altura al 80% de la pantalla */
-    overflow-y: auto; /* Permitir el desplazamiento vertical si el contenido es largo */
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 button, input[type="range"] {
@@ -33,7 +33,7 @@ button, input[type="range"] {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px; /* Ajustar el tamaño de texto */
+    font-size: 14px;
 }
 
 button:hover, input[type="range"]:hover {
@@ -74,32 +74,31 @@ label {
     color: #ecf0f1;
 }
 
-/* Diseño responsivo para pantallas pequeñas */
 @media screen and (max-width: 600px) {
     #controls {
-        width: 200px; /* Ajustar ancho en pantallas pequeñas */
+        width: 200px;
         padding: 10px;
     }
     
     button, input[type="range"] {
-        font-size: 12px; /* Ajustar tamaño de texto en pantallas pequeñas */
+        font-size: 12px;
         padding: 8px;
     }
     
     #instructions {
-        font-size: 11px; /* Reducir el tamaño del texto en pantallas pequeñas */
+        font-size: 11px;
     }
 }
 
-/* Estilos para el contenedor de información */
 #info-container {
     position: absolute;
     top: 120px;
     right: 10px;
     width: 250px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7); /* Mayor opacidad para mejor contraste */
     padding: 15px;
     border-radius: 8px;
     border: 1px solid #ffffff55;
     z-index: 100;
+    color: white; /* Color de fuente cambiado a blanco */
 }

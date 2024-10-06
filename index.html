@@ -33,24 +33,6 @@
                     <li><strong>Swipe</strong> to rotate the view around the planets.</li>
                 </ul>
             </div>
-            <div class="instruction-item">
-                <span>Simulation Speed Control:</span>
-                <ul>
-                    <li>Use the slider to adjust the speed of the simulation. A lower value slows down the orbits, while a higher value speeds them up.</li>
-                </ul>
-            </div>
-            <div class="instruction-item">
-                <span>Toggle Labels:</span>
-                <ul>
-                    <li>This button shows or hides the names of the planets and celestial objects in the simulation.</li>
-                </ul>
-            </div>
-            <div class="instruction-item">
-                <span>Toggle Orbits:</span>
-                <ul>
-                    <li>This button shows or hides the orbital paths of the planets, making it easier to focus on the celestial bodies themselves.</li>
-                </ul>
-            </div>
         </div>
     </div>
     
@@ -63,11 +45,6 @@
         <p><strong>Supports Life:</strong> <span id="planet-life"></span></p>
         <p><strong>Effect on your body:</strong> <span id="planet-effect"></span></p>
         
-        <p><strong>Your weight on this planet:</strong></p>
-        <input type="number" id="weight-input" placeholder="Your weight on Earth (kg)">
-        <button onclick="calculateWeight()">Calculate</button>
-        <p><strong>Weight on this planet:</strong> <span id="planet-weight-result"></span> kg</p>
-        
         <p><strong>Fun Fact:</strong> <span id="planet-fact"></span></p>
     </div>
 
@@ -75,7 +52,6 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
 
-    <!-- Reference to the external JavaScript file -->
     <script src="Assets/Scripts/Script.js"></script>
 </body>
 </html>
