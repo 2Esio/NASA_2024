@@ -425,48 +425,26 @@ function processCometsData(cometsData) {
             console.log('Processing comet:', comet.object);
             const size = comet.size || 0.7;
             const semiMajorAxis = comet.semi_major_axis || Math.random() * 50 + 30; // Semieje mayor
-            const translationSpeed = comet.orbital_period || 0.005;
+            const translationSpeed = comet.orbital_period ? 0.001 / comet.orbital_period : Math.random() * 0.002 + 0.001; // Velocidad variable
 
             // Crear el cuerpo del cometa
             const cometTexture = loader.load('Assets/Images/moon.jpg');
             const cometBody = createCelestialBody(size, cometTexture, comet.object);
 
-            // Crear la órbita del cometa
-            const cometOrbit = createOrbit(semiMajorAxis, 0xffffff); // Órbita en blanco para los cometas
-            scene.add(cometOrbit);
+            // Añadir el cometa a la escena
+            scene.add(cometBody);
 
-            // Añadir cometa y órbita a sus respectivos arrays
+            // Guardar cometa en arrays para movimiento
             comets.push(cometBody);
-            cometOrbits.push(cometOrbit);
+            cometsAngles.push(0);  // Inicializamos el ángulo en 0
+            cometsRotationSpeeds.push(translationSpeed);  // Almacenamos la velocidad
 
-            // Obtener los puntos de la geometría de la órbita
-            const points = cometOrbit.geometry.attributes.position.array;
-            const numPoints = points.length / 3;  // Cada punto tiene 3 coordenadas (x, y, z)
-            let cometProgress = 0; // Progreso para determinar la posición en la órbita
-
-            // Función para actualizar la posición del cometa
-            function updateCometPosition() {
-                cometProgress += translationSpeed * timeSpeed; // Incrementar el progreso con la velocidad ajustada
-
-                // Normalizar el progreso para asegurarse de que esté dentro del rango de puntos
-                const pointIndex = Math.floor((cometProgress % 1) * numPoints) * 3; // Obtener el índice correcto en la órbita
-
-                // Obtener las coordenadas del punto actual en la órbita
-                const x = points[pointIndex];
-                const y = points[pointIndex + 1];
-                const z = points[pointIndex + 2];
-
-                // Actualizar la posición del cometa a la nueva posición en la órbita
-                cometBody.position.set(x, y, z);
-            }
-
-            // Añadir la función de actualización de la posición del cometa a la animación
-            animateCometFunctions.push(updateCometPosition);
+            // Crear la órbita visual del cometa
+            const cometOrbit = createOrbit(semiMajorAxis, 0xffffff); // Órbita blanca
+            cometOrbits.push(cometOrbit);  // Guardamos la órbita
         }
     });
 }
-
-
 
 // Step 3: Call the fetch function to load comets data when the scene is initialized
 fetchComets();
@@ -498,6 +476,8 @@ let asteroids = [];  // Lista de asteroides
 let asteroidOrbits = [];  // Lista de órbitas de asteroides
 let comets = [];  // Lista de cometas
 let cometOrbits = [];  // Lista de órbitas de cometas
+let cometsAngles = [];  // Array para almacenar los ángulos de los cometas
+let cometsRotationSpeeds = []; // Array para almacenar las velocidades de rotación de los cometas
 
 // Función para alternar la visibilidad de los asteroides y los cometas, excluyendo planetas
 function toggleAsteroidsAndComets() {
@@ -515,7 +495,22 @@ function toggleAsteroidsAndComets() {
     // Alternar visibilidad de las órbitas de los cometas
     cometOrbits.forEach(orbit => orbit.visible = asteroidsVisible);
 }
+function updateComets() {
+    comets.forEach((comet, index) => {
+        // Actualizar el ángulo con la velocidad correspondiente
+        cometsAngles[index] += cometsRotationSpeeds[index] * timeSpeed;
 
+        // Calcular la posición en la órbita circular utilizando el semieje mayor
+        const semiMajorAxis = cometOrbits[index].geometry.attributes.position.array[0];  // Obtener el radio de la órbita
+
+        // Calculamos la posición en el plano horizontal (manteniendo y = 0)
+        const x = Math.cos(cometsAngles[index]) * semiMajorAxis;
+        const z = Math.sin(cometsAngles[index]) * semiMajorAxis;
+
+        // Actualizar la posición del cometa
+        comet.position.set(x, 0, z);  // Mantener el movimiento en el plano horizontal
+    });
+}
 function onTouchStart(event) {
     event.preventDefault();
 
@@ -713,6 +708,7 @@ function animate() {
 
     animateCometFunctions.forEach(updateFunction => updateFunction());
     updateAsteroids();
+    updateComets();
     // Si está con zoom, hacer que la cámara siga al planeta
     if (isZoomedIn && zoomTarget && !isManualControl) {
         const followDistance = 10;
