@@ -129,6 +129,81 @@ function createAsteroidBelt() {
 
 createAsteroidBelt();
 
+// Información de los cuerpos celestes
+const celestialBodiesInfo = {
+    sun: {
+        name: "Sun",
+        gravity: "273.0",
+        atmosphere: "Hydrogen, Helium",
+        type: "Star",
+        discoverer: "N/A",
+        life: "No",
+        effect: "You would burn instantly.",
+        fact: "The Sun contains 99.86% of the mass in the Solar System."
+    },
+    mercury: {
+        name: "Mercury",
+        gravity: "3.7",
+        atmosphere: "None",
+        type: "Rocky",
+        discoverer: "Unknown",
+        life: "No",
+        effect: "Your weight would be much lighter.",
+        fact: "Mercury is the closest planet to the Sun but not the hottest."
+    },
+    venus: {
+        name: "Venus",
+        gravity: "8.87",
+        atmosphere: "Carbon Dioxide",
+        type: "Rocky",
+        discoverer: "Unknown",
+        life: "No",
+        effect: "Your body would experience crushing pressure.",
+        fact: "Venus has temperatures over 450°C."
+    },
+    earth: {
+        name: "Earth",
+        gravity: "9.81",
+        atmosphere: "Nitrogen and Oxygen",
+        type: "Rocky",
+        discoverer: "Unknown",
+        life: "Yes",
+        effect: "Your body would function normally.",
+        fact: "Earth is the only known planet to harbor life."
+    },
+    mars: {
+        name: "Mars",
+        gravity: "3.71",
+        atmosphere: "Carbon Dioxide",
+        type: "Rocky",
+        discoverer: "Galileo Galilei",
+        life: "No",
+        effect: "Your weight would be much lighter.",
+        fact: "Mars is home to the tallest mountain in the solar system."
+    },
+    // Agrega información de los demás planetas aquí...
+};
+
+// Función para mostrar la información del planeta seleccionado
+function showPlanetInfo(planetName) {
+    console.log("Showing information for: ",planetName);
+    const info = celestialBodiesInfo[planetName.toLoweCase()];
+
+    if(info){
+        document.getElementById('planet-name').textContent = info.name;
+        document.getElementById('planet-gravity').textContent = info.gravity;
+        document.getElementById('planet-atmosphere').textContent = info.atmosphere;
+        document.getElementById('planet-type').textContent = info.type;
+        document.getElementById('planet-discoverer').textContent = info.discoverer;
+        document.getElementById('planet-life').textContent = info.life;
+        document.getElementById('planet-effect').textContent = info.effect;
+        document.getElementById('planet-fact').textContent = info.fact;
+        document.getElementById('info-container').style.display = 'block';  // Show the container
+    }else{
+        console.log("Informationt for:", planetName)
+    }
+}
+
 let labelsVisible = true;
 let orbitsVisible = true;
 let timeSpeed = 1;
@@ -198,6 +273,13 @@ function onMouseClick(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     handleClickOrTouch();
+    if (intersects.length > 0) {
+        const selectedPlanet = intersects[0].object.name.toLowerCase();
+        showPlanetInfo(selectedPlanet);
+        zoomToPlanet(intersects[0].object);
+    } else if (isZoomedIn) {
+        resetZoom();
+    }
 }
 
 function onTouchStart(event) {
@@ -205,6 +287,13 @@ function onTouchStart(event) {
     mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
     handleClickOrTouch();
+    if (intersects.length > 0) {
+        const selectedPlanet = intersects[0].object.name.toLowerCase();
+        showPlanetInfo(selectedPlanet);
+        zoomToPlanet(intersects[0].object);
+    } else if (isZoomedIn) {
+        resetZoom();
+    }
 }
 
 function handleClickOrTouch() {
